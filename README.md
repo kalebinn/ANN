@@ -1,2 +1,2 @@
-# Articial Neural Network 
+# Artificial Neural Network 
 ANN implementation with Ricky Valdez
