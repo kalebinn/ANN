@@ -1,2 +1,5 @@
 # Artificial Neural Network 
-ANN implementation with Ricky Valdez
+ANN implementation 
+## Contributors:
+Kelvin Ma (RFCUNY, EE CCNY)
+Ricky Valdez (RFCUNY, CpE CCNY)

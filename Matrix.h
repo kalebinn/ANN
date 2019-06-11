@@ -15,12 +15,14 @@ class Matrix
 {
 	public:
 		Matrix(int rows, int cols); // constructor
-		Matrix (char *input_file);
+		Matrix(char *input_file);
 		Matrix dotProduct(Matrix arg);
 		Matrix elementMult(Matrix arg);
 		Matrix operator= (Matrix arg);
 		Matrix operator+ (Matrix arg);
 		Matrix operator- (Matrix arg);
+		void printMatrix(void);
+		~Matrix(); // destructor
 	private:
 		int nRows;
 		int nCols;

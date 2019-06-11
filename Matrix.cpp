@@ -4,7 +4,7 @@
  *  Created on: Jun 10, 2019
  *      Author: Kalebin
  */
-
+#include <iostream>
 #include "Matrix.h"
 
 namespace KR_Matrix {
@@ -12,6 +12,23 @@ namespace KR_Matrix {
 Matrix::Matrix(int rows, int cols)
 {
 	// TODO: write the constructor
+	nRows = rows;
+	nCols = cols;
+	// allocate memory for nRows
+	A = new double *[nRows];
+	for (int i = 0; i < nRows; i++)
+	{
+		// each pointer element in nRow, will point to
+		A[i] = new double [nCols];
+	}
+
+	for (int i = 0; i < nRows; i++)
+	{
+		for (int j = 0; j < nCols; j++)
+		{
+			A[i][j] = 0;
+		}
+	}
 }
 
 Matrix::Matrix (char *input_file)
@@ -57,5 +74,27 @@ Matrix Matrix::operator - (Matrix arg)
 	return Output;
 }
 
+void Matrix::printMatrix()
+{
+	// TODO: prints out the matrix;
+
+	for (int i = 0; i < nRows; i++)
+	{
+		for (int j = 0; j < nCols; j++)
+		{
+			std::cout << A[i][j] << " ";
+		}
+		std::cout << std::endl;
+	}
+}
+Matrix::~Matrix()
+{
+	// deallocate all memory used
+	for (int i = 0; i < nRows; i++)
+	{
+		delete [] A[i];
+	}
+	delete [] A;
+}
 } /* namespace KR_Matrix */
 
