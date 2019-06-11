@@ -5,6 +5,9 @@
  *      Author: Kalebin
  */
 #include <iostream>
+#include <assert.h>
+#include <fstream>
+#include <string>
 #include "Matrix.h"
 
 namespace KR_Matrix {
@@ -27,9 +30,27 @@ Matrix::Matrix(int rows, int cols)
 	}
 }
 
-Matrix::Matrix (char *input_file)
+Matrix::Matrix (std::string input_file_name)
 {
 	// TODO : constructor that reads array from input file
+	std::ifstream input_file (input_file_name, std::ios::in);
+	nRows = 0;
+	nCols = 0;
+
+	input_file >> nRows >> nCols;
+
+	A = new double *[nRows];
+	for (int i = 0; i < nRows; i++)
+	{
+		// each pointer element in nRow, will point to a new column
+		A[i] = new double [nCols];
+		for (int j = 0; j < nCols; j++)
+		{
+			input_file >> A[i][j]; // populate each element from input file
+		}
+	}
+
+
 }
 
 Matrix::Matrix(const Matrix &arg)
@@ -50,6 +71,11 @@ Matrix::Matrix(const Matrix &arg)
 
 }
 
+void
+Matrix::setELement (int row, int col, double val)
+{
+
+}
 Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 {
 	// TODO: element wise multiplication of two matrices

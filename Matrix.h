@@ -15,8 +15,16 @@ class Matrix
 {
 	public:
 		Matrix(int rows, int cols); // constructor
-		Matrix(char *input_file); // constructor that reads from file
+		Matrix(std::string input_file_name); // constructor that reads from file
+		/* pre condition: file format of the input matrix should be of
+		 *
+		 * nRows nCols
+		 * M[0][0]	M[0][1]  M[0][2] M[0][nCols-1]
+		 * ...
+		 * M[nRows-1][0] ... M[nRows-1][nCols-1]
+		 * */
 		Matrix(const Matrix &arg); // copy constructor
+		void setELement (int row, int col, double val);
 		friend Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2); // element by element mult
 		Matrix operator= (const Matrix &arg); // assignment operator
 		friend Matrix operator* (const Matrix &Matrix1, const Matrix &Matrix2); // dot product
