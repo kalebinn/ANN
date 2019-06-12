@@ -146,7 +146,6 @@ Matrix::operator== (const Matrix &arg)
 	{
 		is_equal = false;
 	}
-	std::cout << "diff_found = " << is_equal << std::endl;
 	return is_equal;
 }
 
