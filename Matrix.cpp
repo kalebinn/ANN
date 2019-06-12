@@ -68,9 +68,19 @@ Matrix::Matrix(const Matrix &arg)
 	}
 
 }
-Matrix Transpose(void)
+Matrix Matrix::Transpose(void)
 {
-	Matrix Output(0,0);
+	//Matrix Output(0,0);
+	Matrix Output (this->nCols, this->nRows);
+
+	for (int i = 0 ; i < this->nRows; i++)
+	{
+		for (int j = 0; j < this->nCols; j++)
+		{
+			Output.A[j][i] = this->A[i][j];
+		}
+	}
+
 	return Output;
 }
 
@@ -109,7 +119,6 @@ Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 Matrix Matrix::operator = (const Matrix &arg)
 {
 	// TODO: overloaded operator =, assigns one matrix to another
-	//Matrix Output(arg.nRows,arg.nCols);
 	this->nRows = arg.nRows;
 	this->nCols = arg.nCols;
 
@@ -120,7 +129,6 @@ Matrix Matrix::operator = (const Matrix &arg)
 			this->A[i][j] = arg.A[i][j];
 		}
 	}
-
 	return *this;
 }
 
@@ -155,7 +163,7 @@ double operator *(const Matrix &Matrix1, const Matrix &Matrix2)
 	assert(Matrix1.nRows == Matrix2.nRows);
 	assert (Matrix1.nCols == Matrix2.nCols);
 
-	double dotProduct;
+	double dotProduct = 0;
 	for (int i = 0; i < Matrix1.nRows; i++)
 	{
 		for (int j = 0; j < Matrix1.nCols; j++)

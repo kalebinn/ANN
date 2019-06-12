@@ -15,7 +15,7 @@ class Matrix
 {
 	public:
 		Matrix(int rows, int cols); // constructor
-		Matrix(std::string input_file_name); // constructor that reads from file
+		Matrix(std::string); // constructor that reads from file
 		/* pre condition: file format of the input matrix should be of
 		 *
 		 * nRows nCols
