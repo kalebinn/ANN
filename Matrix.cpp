@@ -134,10 +134,8 @@ Matrix::operator== (const Matrix &arg)
 		{
 			for (int j = 0; j < nCols && is_equal == true; j++)
 			{
-				std::cout << A[i][j] << " vs " << arg.A[i][j] << std::endl;
 				if (A[i][j] != arg.A[i][j])
 				{
-					std::cout << "going in the wrong thing" << std::endl;
 					is_equal = false;
 				}
 				else{}
@@ -155,8 +153,17 @@ Matrix::operator== (const Matrix &arg)
 double operator *(const Matrix &Matrix1, const Matrix &Matrix2)
 {
 	// TODO: Apply dot product
-	double dotProduct;
+	assert(Matrix1.nRows == Matrix2.nRows);
+	assert (Matrix1.nCols == Matrix2.nCols);
 
+	double dotProduct;
+	for (int i = 0; i < Matrix1.nRows; i++)
+	{
+		for (int j = 0; j < Matrix1.nCols; j++)
+		{
+			dotProduct += (Matrix1.A[i][j] * Matrix2.A[i][j]);
+		}
+	}
 
 	return dotProduct;
 }

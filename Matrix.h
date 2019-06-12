@@ -24,12 +24,12 @@ class Matrix
 		 * M[nRows-1][0] ... M[nRows-1][nCols-1]
 		 * */
 		Matrix(const Matrix &arg); // copy constructor
-		Matrix Transpose(void);
+		Matrix Transpose(void); // transpose matrix
 		void setELement (int row, int col, double val);
 		friend Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2); // element by element mult
 		Matrix operator= (const Matrix &arg); // assignment operator
 		bool operator== (const Matrix &arg);
-		friend double operator* (const Matrix &Matrix1, const Matrix &Matrix2); // dot product
+		friend double operator* (const Matrix &Matrix1, const Matrix &Matrix2); // dot (scalar) product
 		friend Matrix operator* (double C, const Matrix &arg); // matrix multiplied by constant
 		friend Matrix operator+ (const Matrix &Matrix1, const Matrix &Matrix2); // matrix addition
 		friend Matrix operator- (const Matrix &Matrix1, const Matrix &Matrix2); // matrix subtraction
