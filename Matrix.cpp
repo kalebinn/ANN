@@ -4,9 +4,9 @@
  *  Created on: Jun 10, 2019
  *      Author: Kalebin
  */
-#include <iostream>
 #include <assert.h>
 #include <fstream>
+#include <iostream>
 #include <string>
 #include "Matrix.h"
 
@@ -49,8 +49,6 @@ Matrix::Matrix (std::string input_file_name)
 			input_file >> A[i][j]; // populate each element from input file
 		}
 	}
-
-
 }
 
 Matrix::Matrix(const Matrix &arg)
@@ -70,40 +68,111 @@ Matrix::Matrix(const Matrix &arg)
 	}
 
 }
+Matrix Transpose(void)
+{
+	Matrix Output(0,0);
+	return Output;
+}
 
 void
 Matrix::setELement (int row, int col, double val)
 {
-
+	if (row < nRows && col < nCols)
+	{
+		A[row][col] = val;
+	}
+	else
+	{
+		std::cout << "check inputs" << std::endl;
+	}
 }
+
 Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 {
 	// TODO: element wise multiplication of two matrices
-	Matrix Output(0,0);
 
+	assert(Matrix1.nRows == Matrix2.nRows);
+	assert (Matrix1.nCols == Matrix2.nCols);
+
+	Matrix Output(Matrix1.nRows, Matrix1.nCols);
+
+	for (int i = 0; i < Matrix1.nRows; i++)
+	{
+		for (int j = 0; j < Matrix1.nCols; j++)
+		{
+			Output.A[i][j] = Matrix1.A[i][j] * Matrix2.A[i][j];
+		}
+	}
 	return Output;
 }
 
 Matrix Matrix::operator = (const Matrix &arg)
 {
 	// TODO: overloaded operator =, assigns one matrix to another
-	Matrix Output(0,0);
+	//Matrix Output(arg.nRows,arg.nCols);
+	this->nRows = arg.nRows;
+	this->nCols = arg.nCols;
 
-	return Output;
+	for (int i = 0; i < arg.nRows; i++)
+	{
+		for (int j = 0; j < arg.nCols; j++)
+		{
+			this->A[i][j] = arg.A[i][j];
+		}
+	}
+
+	return *this;
 }
 
-Matrix operator *(const Matrix &Matrix1, const Matrix &Matrix2)
+bool
+Matrix::operator== (const Matrix &arg)
 {
-	// TODO: Apply dot product
-	Matrix Output(0,0);
-
-	return Output;
+	bool is_equal = true;
+	if (nRows == arg.nRows && nCols == arg.nCols)
+	{
+		for (int i = 0; i < nRows && is_equal == true; i++)
+		{
+			for (int j = 0; j < nCols && is_equal == true; j++)
+			{
+				std::cout << A[i][j] << " vs " << arg.A[i][j] << std::endl;
+				if (A[i][j] != arg.A[i][j])
+				{
+					std::cout << "going in the wrong thing" << std::endl;
+					is_equal = false;
+				}
+				else{}
+			}
+		}
+	}
+	else
+	{
+		is_equal = false;
+	}
+	std::cout << "diff_found = " << is_equal << std::endl;
+	return is_equal;
 }
 
-Matrix operator *(double C, const Matrix &Matrix2)
+double operator *(const Matrix &Matrix1, const Matrix &Matrix2)
 {
 	// TODO: Apply dot product
-	Matrix Output(0,0);
+	double dotProduct;
+
+
+	return dotProduct;
+}
+
+Matrix operator *(double C, const Matrix &arg)
+{
+	// TODO: Apply product with a constant
+	Matrix Output(arg.nRows,arg.nCols);
+
+	for (int i = 0; i < arg.nRows; i++)
+	{
+		for (int j = 0; j < arg.nCols; j++)
+		{
+			Output.A[i][j] = C * arg.A[i][j];
+		}
+	}
 
 	return Output;
 }
@@ -111,15 +180,38 @@ Matrix operator *(double C, const Matrix &Matrix2)
 Matrix operator + (const Matrix &Matrix1, const Matrix &Matrix2)
 {
 	// TODO: overloaded operator +, adds two matrices
-	Matrix Output(0,0);
+	//assert(Matrix1.nRows == Matrix2.nRows && Matrix1.nCols == Matrix2.nCols);
+	assert(Matrix1.nRows == Matrix2.nRows);
+	assert (Matrix1.nCols == Matrix2.nCols);
 
+	Matrix Output(Matrix1.nRows, Matrix1.nCols);
+
+	for (int i = 0; i < Matrix1.nRows; i++)
+	{
+		for (int j = 0; j < Matrix1.nCols; j++)
+		{
+			Output.A[i][j] = Matrix1.A[i][j] + Matrix2.A[i][j];
+		}
+	}
 	return Output;
 }
 
 Matrix operator - (const Matrix &Matrix1, const Matrix &Matrix2)
 {
 	// TODO: overloaded operator -, subtracts two matrices
-	Matrix Output(0,0);
+	assert(Matrix1.nRows == Matrix2.nRows);
+	assert (Matrix1.nCols == Matrix2.nCols);
+
+		Matrix Output(Matrix1.nRows, Matrix1.nCols);
+
+		for (int i = 0; i < Matrix1.nRows; i++)
+		{
+			for (int j = 0; j < Matrix1.nCols; j++)
+			{
+				Output.A[i][j] = Matrix1.A[i][j] - Matrix2.A[i][j];
+			}
+		}
+		return Output;
 
 	return Output;
 }
@@ -132,7 +224,7 @@ void Matrix::printMatrix()
 	{
 		for (int j = 0; j < nCols; j++)
 		{
-			std::cout << A[i][j] << " ";
+			std::cout << A[i][j] << "\t";
 		}
 		std::cout << std::endl;
 	}
