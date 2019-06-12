@@ -12,18 +12,18 @@
 
 namespace KR_Matrix {
 
-Matrix::Matrix(int rows, int cols)
+Matrix::Matrix(mat_size_type rows, mat_size_type cols)
 {
 	// constructor
 	nRows = rows;
 	nCols = cols;
 	// allocate memory for nRows
-	A = new double *[nRows];
-	for (int i = 0; i < nRows; i++)
+	A = new mat_value_type *[nRows];
+	for (mat_size_type i = 0; i < nRows; i++)
 	{
 		// each pointer element in nRow, will point to a new column
-		A[i] = new double [nCols];
-		for (int j = 0; j < nCols; j++)
+		A[i] = new mat_value_type [nCols];
+		for (mat_size_type j = 0; j < nCols; j++)
 		{
 			A[i][j] = 0; // populate each element with 0
 		}
@@ -39,12 +39,12 @@ Matrix::Matrix (std::string input_file_name)
 
 	input_file >> nRows >> nCols;
 
-	A = new double *[nRows];
-	for (int i = 0; i < nRows; i++)
+	A = new mat_value_type *[nRows];
+	for (mat_size_type i = 0; i < nRows; i++)
 	{
 		// each pointer element in nRow, will point to a new column
-		A[i] = new double [nCols];
-		for (int j = 0; j < nCols; j++)
+		A[i] = new mat_value_type [nCols];
+		for (mat_size_type j = 0; j < nCols; j++)
 		{
 			input_file >> A[i][j]; // populate each element from input file
 		}
@@ -56,12 +56,12 @@ Matrix::Matrix(const Matrix &arg)
 	nRows = arg.nRows;
 	nCols = arg.nCols;
 	// allocate memory for nRows
-	A = new double *[nRows];
-	for (int i = 0; i < nRows; i++)
+	A = new mat_value_type *[nRows];
+	for (mat_size_type i = 0; i < nRows; i++)
 	{
 		// each pointer element in nRow, will point to another column
-		A[i] = new double [nCols]; // allocate memory for nCols
-		for (int j = 0; j < nCols; j++)
+		A[i] = new mat_value_type [nCols]; // allocate memory for nCols
+		for (mat_size_type j = 0; j < nCols; j++)
 		{
 			A[i][j] = arg.A[i][j]; // populate matrix
 		}
@@ -73,9 +73,9 @@ Matrix Matrix::Transpose(void)
 	//Matrix Output(0,0);
 	Matrix Output (this->nCols, this->nRows);
 
-	for (int i = 0 ; i < this->nRows; i++)
+	for (mat_size_type i = 0 ; i < this->nRows; i++)
 	{
-		for (int j = 0; j < this->nCols; j++)
+		for (mat_size_type j = 0; j < this->nCols; j++)
 		{
 			Output.A[j][i] = this->A[i][j];
 		}
@@ -85,7 +85,7 @@ Matrix Matrix::Transpose(void)
 }
 
 void
-Matrix::setELement (int row, int col, double val)
+Matrix::setELement (mat_size_type row, mat_size_type col, mat_value_type val)
 {
 	if (row < nRows && col < nCols)
 	{
@@ -97,6 +97,22 @@ Matrix::setELement (int row, int col, double val)
 	}
 }
 
+Matrix::mat_value_type Matrix::getElement(mat_size_type row, mat_size_type col)
+{
+	mat_value_type element;
+
+	if (row < nRows && col < nCols)
+	{
+		element = A[row][col];
+	}
+	else
+	{
+		std::cout << "check inputs" << std::endl;
+	}
+
+	return element;
+}
+
 Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 {
 	// TODO: element wise multiplication of two matrices
@@ -106,9 +122,9 @@ Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 
 	Matrix Output(Matrix1.nRows, Matrix1.nCols);
 
-	for (int i = 0; i < Matrix1.nRows; i++)
+	for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
 	{
-		for (int j = 0; j < Matrix1.nCols; j++)
+		for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
 		{
 			Output.A[i][j] = Matrix1.A[i][j] * Matrix2.A[i][j];
 		}
@@ -122,9 +138,9 @@ Matrix Matrix::operator = (const Matrix &arg)
 	this->nRows = arg.nRows;
 	this->nCols = arg.nCols;
 
-	for (int i = 0; i < arg.nRows; i++)
+	for (Matrix::mat_size_type i = 0; i < arg.nRows; i++)
 	{
-		for (int j = 0; j < arg.nCols; j++)
+		for (Matrix::mat_size_type j = 0; j < arg.nCols; j++)
 		{
 			this->A[i][j] = arg.A[i][j];
 		}
@@ -138,9 +154,9 @@ Matrix::operator== (const Matrix &arg)
 	bool is_equal = true;
 	if (nRows == arg.nRows && nCols == arg.nCols)
 	{
-		for (int i = 0; i < nRows && is_equal == true; i++)
+		for (Matrix::mat_size_type i = 0; i < nRows && is_equal == true; i++)
 		{
-			for (int j = 0; j < nCols && is_equal == true; j++)
+			for (Matrix::mat_size_type j = 0; j < nCols && is_equal == true; j++)
 			{
 				if (A[i][j] != arg.A[i][j])
 				{
@@ -164,9 +180,9 @@ double operator *(const Matrix &Matrix1, const Matrix &Matrix2)
 	assert (Matrix1.nCols == Matrix2.nCols);
 
 	double dotProduct = 0;
-	for (int i = 0; i < Matrix1.nRows; i++)
+	for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
 	{
-		for (int j = 0; j < Matrix1.nCols; j++)
+		for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
 		{
 			dotProduct += (Matrix1.A[i][j] * Matrix2.A[i][j]);
 		}
@@ -180,9 +196,9 @@ Matrix operator *(double C, const Matrix &arg)
 	// TODO: Apply product with a constant
 	Matrix Output(arg.nRows,arg.nCols);
 
-	for (int i = 0; i < arg.nRows; i++)
+	for (Matrix::mat_size_type i = 0; i < arg.nRows; i++)
 	{
-		for (int j = 0; j < arg.nCols; j++)
+		for (Matrix::mat_size_type j = 0; j < arg.nCols; j++)
 		{
 			Output.A[i][j] = C * arg.A[i][j];
 		}
@@ -200,13 +216,29 @@ Matrix operator + (const Matrix &Matrix1, const Matrix &Matrix2)
 
 	Matrix Output(Matrix1.nRows, Matrix1.nCols);
 
-	for (int i = 0; i < Matrix1.nRows; i++)
+	for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
 	{
-		for (int j = 0; j < Matrix1.nCols; j++)
+		for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
 		{
 			Output.A[i][j] = Matrix1.A[i][j] + Matrix2.A[i][j];
 		}
 	}
+	return Output;
+}
+
+Matrix operator +(double C, const Matrix &arg)
+{
+	// TODO: Apply product with a constant
+	Matrix Output(arg.nRows,arg.nCols);
+
+	for (Matrix::mat_size_type i = 0; i < arg.nRows; i++)
+	{
+		for (Matrix::mat_size_type j = 0; j < arg.nCols; j++)
+		{
+			Output.A[i][j] = C + arg.A[i][j];
+		}
+	}
+
 	return Output;
 }
 
@@ -218,9 +250,9 @@ Matrix operator - (const Matrix &Matrix1, const Matrix &Matrix2)
 
 		Matrix Output(Matrix1.nRows, Matrix1.nCols);
 
-		for (int i = 0; i < Matrix1.nRows; i++)
+		for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
 		{
-			for (int j = 0; j < Matrix1.nCols; j++)
+			for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
 			{
 				Output.A[i][j] = Matrix1.A[i][j] - Matrix2.A[i][j];
 			}
@@ -230,13 +262,29 @@ Matrix operator - (const Matrix &Matrix1, const Matrix &Matrix2)
 	return Output;
 }
 
+Matrix operator -(double C, const Matrix &arg)
+{
+	// TODO: Apply product with a constant
+	Matrix Output(arg.nRows,arg.nCols);
+
+	for (Matrix::mat_size_type i = 0; i < arg.nRows; i++)
+	{
+		for (Matrix::mat_size_type j = 0; j < arg.nCols; j++)
+		{
+			Output.A[i][j] = C - arg.A[i][j];
+		}
+	}
+
+	return Output;
+}
+
 void Matrix::printMatrix()
 {
 	// TODO: prints out the matrix;
 
-	for (int i = 0; i < nRows; i++)
+	for (Matrix::mat_size_type i = 0; i < nRows; i++)
 	{
-		for (int j = 0; j < nCols; j++)
+		for (Matrix::mat_size_type j = 0; j < nCols; j++)
 		{
 			std::cout << A[i][j] << "\t";
 		}
@@ -246,7 +294,7 @@ void Matrix::printMatrix()
 Matrix::~Matrix()
 {
 	// deallocate all memory used
-	for (int i = 0; i < nRows; i++)
+	for (Matrix::mat_size_type i = 0; i < nRows; i++)
 	{
 		delete [] A[i];
 	}
