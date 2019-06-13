@@ -115,8 +115,6 @@ Matrix::mat_value_type Matrix::getElement(mat_size_type row, mat_size_type col)
 
 Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 {
-	// TODO: element wise multiplication of two matrices
-
 	assert(Matrix1.nRows == Matrix2.nRows);
 	assert (Matrix1.nCols == Matrix2.nCols);
 
@@ -183,7 +181,6 @@ Matrix::operator== (const Matrix &arg)
 
 double operator *(const Matrix &Matrix1, const Matrix &Matrix2)
 {
-	// TODO: Apply dot product
 	assert(Matrix1.nRows == Matrix2.nRows);
 	assert (Matrix1.nCols == Matrix2.nCols);
 
@@ -201,7 +198,6 @@ double operator *(const Matrix &Matrix1, const Matrix &Matrix2)
 
 Matrix operator *(double C, const Matrix &arg)
 {
-	// TODO: Apply product with a constant
 	Matrix Output(arg.nRows,arg.nCols);
 
 	for (Matrix::mat_size_type i = 0; i < arg.nRows; i++)
@@ -217,7 +213,6 @@ Matrix operator *(double C, const Matrix &arg)
 
 Matrix operator + (const Matrix &Matrix1, const Matrix &Matrix2)
 {
-	// TODO: overloaded operator +, adds two matrices
 	//assert(Matrix1.nRows == Matrix2.nRows && Matrix1.nCols == Matrix2.nCols);
 	assert(Matrix1.nRows == Matrix2.nRows);
 	assert (Matrix1.nCols == Matrix2.nCols);
@@ -236,7 +231,6 @@ Matrix operator + (const Matrix &Matrix1, const Matrix &Matrix2)
 
 Matrix operator +(double C, const Matrix &arg)
 {
-	// TODO: Apply product with a constant
 	Matrix Output(arg.nRows,arg.nCols);
 
 	for (Matrix::mat_size_type i = 0; i < arg.nRows; i++)
@@ -252,7 +246,6 @@ Matrix operator +(double C, const Matrix &arg)
 
 Matrix operator - (const Matrix &Matrix1, const Matrix &Matrix2)
 {
-	// TODO: overloaded operator -, subtracts two matrices
 	assert(Matrix1.nRows == Matrix2.nRows);
 	assert (Matrix1.nCols == Matrix2.nCols);
 
@@ -272,7 +265,6 @@ Matrix operator - (const Matrix &Matrix1, const Matrix &Matrix2)
 
 Matrix operator -(double C, const Matrix &arg)
 {
-	// TODO: Apply product with a constant
 	Matrix Output(arg.nRows,arg.nCols);
 
 	for (Matrix::mat_size_type i = 0; i < arg.nRows; i++)
@@ -288,8 +280,6 @@ Matrix operator -(double C, const Matrix &arg)
 
 void Matrix::printMatrix()
 {
-	// TODO: prints out the matrix;
-
 	for (Matrix::mat_size_type i = 0; i < nRows; i++)
 	{
 		for (Matrix::mat_size_type j = 0; j < nCols; j++)
