@@ -134,15 +134,23 @@ Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 
 Matrix Matrix::operator = (const Matrix &arg)
 {
-	// TODO: overloaded operator =, assigns one matrix to another
+	for (Matrix::mat_size_type i = 0; i < this->nRows; i++)
+	{
+		delete [] this->A[i];
+	}
+	delete [] this->A;
+
 	this->nRows = arg.nRows;
 	this->nCols = arg.nCols;
 
-	for (Matrix::mat_size_type i = 0; i < arg.nRows; i++)
+	A = new mat_value_type *[this->nRows];
+	for (mat_size_type i = 0; i < this->nRows; i++)
 	{
-		for (Matrix::mat_size_type j = 0; j < arg.nCols; j++)
+		// each pointer element in nRow, will point to a new column
+		A[i] = new mat_value_type [this->nCols];
+		for (mat_size_type j = 0; j < this->nCols; j++)
 		{
-			this->A[i][j] = arg.A[i][j];
+			A[i][j] = arg.A[i][j]; // populate each element with 0
 		}
 	}
 	return *this;
@@ -290,6 +298,7 @@ void Matrix::printMatrix()
 		}
 		std::cout << std::endl;
 	}
+	std::cout<<std::endl;
 }
 Matrix::~Matrix()
 {
