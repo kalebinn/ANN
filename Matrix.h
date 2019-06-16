@@ -25,6 +25,7 @@ class Matrix
 		mat_size_type getnCols(void) {return this->nCols;}; // return the number of columns
 		mat_value_type getElement(mat_size_type row, mat_size_type col);
 		friend Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2); // element by element mult
+		friend Matrix cat(const Matrix &Matrix1, const Matrix &Matrix2); // concating two matrices
 		Matrix operator= (const Matrix &arg); // assignment operator
 		bool operator== (const Matrix &arg);
 		friend double operator* (const Matrix &Matrix1, const Matrix &Matrix2); // dot (scalar) product

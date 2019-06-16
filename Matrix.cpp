@@ -132,6 +132,53 @@ Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 	return Output;
 }
 
+Matrix cat(const Matrix &Matrix1, const Matrix &Matrix2)
+{
+	assert(Matrix1.nRows == Matrix2.nRows || Matrix1.nCols == Matrix2.nCols);
+
+	if (Matrix1.nRows == Matrix2.nRows)
+	{
+		// concatenate horizontally
+		Matrix::mat_size_type totalCols = Matrix1.nCols + Matrix2.nCols;
+		Matrix Output(Matrix1.nRows, totalCols);
+		for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
+		{
+			for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
+			{
+				Output.A[i][j] = Matrix1.A[i][j];
+			}
+			for (Matrix::mat_size_type j = Matrix1.nCols; j < totalCols; j++)
+			{
+
+				Output.A[i][j] = Matrix2.A[i][j-Matrix1.nCols];
+			}
+		}
+		return Output;
+	}
+	else
+	{
+		// assert handles if Matrix1.nCols != Matrix2.nCols
+		// if handles Matrix1.nRows == Matrix2.nRows
+		// only scenario left is when Matrix1.nCols == Matrix2.nCols
+		// concatenate vertically
+		Matrix::mat_size_type totalRows = Matrix1.nRows + Matrix2.nRows;
+		Matrix Output(totalRows,Matrix1.nCols);
+
+		for (Matrix::mat_size_type i = 0; i < Matrix1.nCols; i++)
+		{
+			for (Matrix::mat_size_type j = 0; j < Matrix1.nRows; j++)
+			{
+				Output.A[j][i] = Matrix1.A[j][i];
+			}
+			for (Matrix::mat_size_type j = Matrix1.nRows; j < totalRows; j++)
+			{
+				Output.A[j][i] = Matrix2.A[j - Matrix1.nRows][i];
+			}
+		}
+		return Output;
+	}
+}
+
 Matrix Matrix::operator = (const Matrix &arg)
 {
 	for (Matrix::mat_size_type i = 0; i < this->nRows; i++)
