@@ -97,17 +97,6 @@ Matrix::setELement (mat_size_type row, mat_size_type col, mat_value_type val)
 	}
 }
 
-Matrix::mat_size_type Matrix::getnRows(void)
-{
-	return this->nRows;
-}
-
-Matrix::mat_size_type Matrix::getnCols(void)
-{
-	return this->nCols;
-}
-
-
 Matrix::mat_value_type Matrix::getElement(mat_size_type row, mat_size_type col)
 {
 	assert(row < this->nRows);

@@ -21,8 +21,8 @@ class Matrix
 		Matrix(const Matrix &arg); // copy constructor
 		Matrix Transpose(void); // transpose matrix
 		void setELement (mat_size_type row, mat_size_type col, mat_value_type val);
-		mat_size_type getnRows(void); // return the numbers of rows
-		mat_size_type getnCols(void); // return the number of columns
+		mat_size_type getnRows(void) {return this->nRows;}; // return the number of rows
+		mat_size_type getnCols(void) {return this->nCols;}; // return the number of columns
 		mat_value_type getElement(mat_size_type row, mat_size_type col);
 		friend Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2); // element by element mult
 		Matrix operator= (const Matrix &arg); // assignment operator
