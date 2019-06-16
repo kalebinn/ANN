@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+
 #include "Matrix.h"
 
 namespace KR_Matrix {
@@ -132,12 +133,12 @@ Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 	return Output;
 }
 
-Matrix cat(const Matrix &Matrix1, const Matrix &Matrix2)
+Matrix cat(const Matrix &Matrix1, const Matrix &Matrix2, std::string direction)
 {
-	assert(Matrix1.nRows == Matrix2.nRows || Matrix1.nCols == Matrix2.nCols);
-
-	if (Matrix1.nRows == Matrix2.nRows)
+	assert (direction == "horizontal" || direction == "vertical");
+	if (direction == "horizontal")
 	{
+		assert(Matrix1.nRows == Matrix2.nRows);
 		// concatenate horizontally
 		Matrix::mat_size_type totalCols = Matrix1.nCols + Matrix2.nCols;
 		Matrix Output(Matrix1.nRows, totalCols);
@@ -157,10 +158,7 @@ Matrix cat(const Matrix &Matrix1, const Matrix &Matrix2)
 	}
 	else
 	{
-		// assert handles if Matrix1.nCols != Matrix2.nCols
-		// if handles Matrix1.nRows == Matrix2.nRows
-		// only scenario left is when Matrix1.nCols == Matrix2.nCols
-		// concatenate vertically
+		assert(Matrix1.nCols == Matrix2.nCols);
 		Matrix::mat_size_type totalRows = Matrix1.nRows + Matrix2.nRows;
 		Matrix Output(totalRows,Matrix1.nCols);
 
