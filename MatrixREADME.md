@@ -107,8 +107,8 @@ If you wish to set the (1,2) element of testMatrix to 4:
 `testMatrix.setElement(1,2,4);`    
 
 will return the following matrix:
-![setElement Example](https://i.imgur.com/fjwd8F7.png)
 
+![setElement Example](https://i.imgur.com/fjwd8F7.png)  
 
 ### Getting an Element <a name="getElement"></a>
 Getting an element from a matrix takes in 2 inputs: the row and the column.
@@ -326,6 +326,6 @@ calling:
 `exampleMatrix.printMatrix();`  
 
 will return:    
-  
+
 `1    2.5     3`
 `4.3  5.1   6.3`
