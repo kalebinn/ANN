@@ -101,7 +101,9 @@ Setting an element in a matrix takes in 3 inputs: the row, column, and desired v
 the values of row and column indicate the index of the element. As such, they *must* be less than or equal to nRows-1 and nCols-1.  
 
 **Example:**  
-![Example](https://i.imgur.com/2r7EIqv.png)     
+
+![Example](https://i.imgur.com/2r7EIqv.png)  
+
 If you wish to set the (1,2) element of testMatrix to 4:  
 
 `testMatrix.setElement(1,2,4);`    
@@ -116,7 +118,9 @@ Getting an element from a matrix takes in 2 inputs: the row and the column.
 the values of row and column indicate the index of the element. As such, they *must* be less than or equal to nRows-1 and nCols-1.  
 
 **Example:**  
-![Example](https://i.imgur.com/jMyAutY.png)   
+
+![Example](https://i.imgur.com/jMyAutY.png)
+
 If you wish to get the element in position (1,1) of the `exampleMatrix`.
 
 `double value;`  
@@ -131,7 +135,9 @@ To get the total number of rows that exist in a matrix:
 `exampleMatrix.getnRows();`  
 
 **Example:**  
+
 ![Example](https://i.imgur.com/jMyAutY.png)   
+
 `int numberOfRows;`  
 `numberOfRows = exampleMatrix.getnRows();`  
 `std::cout << "There are " << numberOfRows <<" rows in exampleMatrix" << std::endl;`  
@@ -144,7 +150,9 @@ To get the total number of columnss that exist in a matrix:
 `exampleMatrix.getnColss();`  
 
 **Example:**  
-![Example](https://i.imgur.com/jMyAutY.png)   
+
+![Example](https://i.imgur.com/jMyAutY.png)  
+
 `int numberOfColumns;`  
 `numberOfColumns = exampleMatrix.getnCols();`  
 `std::cout << "There are " << numberOfColumns <<" columns in exampleMatrix" << std::endl;`  
@@ -155,7 +163,9 @@ will print the following statement:
 
 ### Transpose<a name="Transpose"></a>
 A transpose of a matrix is defined in linear algebra as the flipping of a matrix over its diagonal. i.e. The rows of the original matrix becomes the columns of the new matrix. An example of a matrix transpose is:
+
 ![LATransposeEx](https://i.imgur.com/zacM6MW.png)  
+
 where T denotes a transpose operator. To transpose any matrix with Matrix.h, you can simply call the `transpose()` function. It will return the transposition of the original matrix.  
 
 **Example:**    
@@ -166,7 +176,9 @@ where T denotes a transpose operator. To transpose any matrix with Matrix.h, you
 `transposedExample = exampleMatrix.transpose(); // assigns the matrix to the transpose`  
 
 The contents of `transposedExample` is:  
-![transposedExample](https://i.imgur.com/k8d2o27.png)      
+
+![transposedExample](https://i.imgur.com/k8d2o27.png)
+
 
 ## IV. Matrix Operations<a name="matOps"></a>
 ### Concatenations<a name="cat"></a>
@@ -174,7 +186,9 @@ In order to concatenate two matrices, you need three inputs: two matrices, and t
 `cat(const Matrix &matrix1, const Matrix &matrix2, std::string direction);`  
 
 **Example:**  
-![ExampleMats](https://i.imgur.com/7hNAR6r.png)   
+
+![ExampleMats](https://i.imgur.com/7hNAR6r.png)
+
 To concatenate these two matrices:
 
 `KR_Matrix Matrix concatenatedMatrix (0,0);`  
@@ -182,30 +196,38 @@ To concatenate these two matrices:
 `concatenatedMatrix = cat(exampleMatrix1, exampleMatrix2, directionOfCat);`    
 
 will return the following matrix:
-![concatenatedMatrix](https://i.imgur.com/uxD7xfl.png)
+
+![concatenatedMatrix](https://i.imgur.com/uxD7xfl.png)  
 
 ### Element by Element Multiplication <a name="elementMult"></a>
 `elementMult(const Matrix &matrix1, const Matrix &matrix2)`  
 returns the element-wise multiplication of two matrices.
 
 **Example:**
+
 ![ExampleMats](https://i.imgur.com/7hNAR6r.png)   
+
 To call the elementMult function with the example matrices:
 
 `KR_Matrix::Matrix exampleMatrix3;`  
 `exampleMatrix3 = elementMult(exampleMatrix1, exampleMatrix2);`    
 
-The contents of exampleMatrix3 is the following:
-![example of elementMult](https://i.imgur.com/nNibue2.png)
+The contents of exampleMatrix3 is the following:  
+
+![example of elementMult](https://i.imgur.com/nNibue2.png)  
 
 ### Dot Product <a name="dot"></a>
 The dot product (or scalar product) of two matrices is a scalar number defined by the following:
-![dot product defined](https://i.imgur.com/kQn88ff.png)
+
+![dot product defined](https://i.imgur.com/kQn88ff.png)  
+
 The dot product in this matrix class is the overloaded operator (\*).
 *Note: This operator is also used for multiplication with a constant scalar value.*
 
 **Example:**  
+
 ![ExampleMats](https://i.imgur.com/7hNAR6r.png)  
+
 If we apply the dot product of these matrices:
 
 `double dotProduct = 0;`  
@@ -219,8 +241,9 @@ will print the following statement:
 ### Assignment <a name="assign"></a>
 The assignment operator is the overloaded operator (`=`). It simply sets one matrix equal to another.
 
-**Example:**
-![Example](https://i.imgur.com/jMyAutY.png)   
+**Example:**  
+
+![Example](https://i.imgur.com/jMyAutY.png)     
 
 `KR_Matrix::Matrix exampleMatrix2 (0,0);`  
 `exampleMatrix2 = exampleMatrix;`  
@@ -229,8 +252,10 @@ The output the code above will simply make a copy of the exampleMatrix.
 ### Comparator <a name="is_equal"></a>
 The Comparator operator (`==`) returns a **boolean** value stating whether two matrices are equal. Two matrices are equal if and only if their dimensions and all their elements are the same.
 
-**Example:**
-![ExampleMats](https://i.imgur.com/7hNAR6r.png)  
+**Example:**  
+
+![ExampleMats](https://i.imgur.com/7hNAR6r.png)   
+
 `if (exampleMatrix1 == exampleMatrix2)`  
 `{std::cout << "The matrices are equal." << std::endl;}`  
 `else`  
@@ -241,50 +266,57 @@ The code above will return the following statement:
 ### Other Operations with Matrices <a name="overloadedMatOps"></a>
 #### Matrix Addition<a name="matAdd"></a>
 The matrix addition is handled by the overloaded operator (`+`). This simply performs element by element addition.
-**Example:**
-![ExampleMats](https://i.imgur.com/7hNAR6r.png)  
+**Example:**  
+
+![ExampleMats](https://i.imgur.com/7hNAR6r.png)    
 
 `KR_Matrix::Matrix exampleMatrix3 (0,0);`  
 `exampleMatrix3 = exampleMatrix1 + exampleMatrix2;`  
 
 The contents of `exampleMatrix3` would be the following:  
 
-![Matrix Addition example](https://i.imgur.com/f5pCVTV.png)
+![Matrix Addition example](https://i.imgur.com/f5pCVTV.png)  
 
 
 #### Matrix Subtraction<a name="matSub"></a>
 The matrix subtraction is handled by the overloaded operator (`-`). This simply performs element by element subtraction.
-**Example:**
+**Example:**  
+
 ![ExampleMats](https://i.imgur.com/7hNAR6r.png)  
+
 
 `KR_Matrix::Matrix exampleMatrix3 (0,0);`  
 `exampleMatrix3 = exampleMatrix1 - exampleMatrix2;`  
 
 The contents of `exampleMatrix3` would be the following:  
 
-![Matrix Subtraction example](https://i.imgur.com/ltaSaex.png)
+![Matrix Subtraction example](https://i.imgur.com/ltaSaex.png)  
 
 ### Operations with Scalars <a name="scalarsOp"></a>
 #### Scalar Addition <a name="scalarsAdd"></a>
 Matrix addition with a scalar is handled by the overloaded (`+`). It adds the scalar value across every element of the matrix.
 This operation is communitive, i.e. order of the inputs do not affect the output.
-**Example:**
+**Example:**  
+
 ![ExampleMat](https://i.imgur.com/Znu1cUW.png)  
+
 If we use the exampleMatrix1 in the following code:
 
 `KR_Matrix::Matrix exampleMatrix2 (0,0);`  
 `double constant = 5;`  
 `exampleMatrix2 = exampleMatrix1 + constant;`  
 
-The contents of exampleMatrix2 would be:
+The contents of exampleMatrix2 would be:  
+
 ![Scalar addition example output](https://i.imgur.com/X0BHIDl.png)  
+
 
 #### Scalar Subtraction <a name="scalarsSub"></a>
 Matrix subtraction with a scalar is handled by the overloaded (`-`). It subtracts the scalar value from every element of the matrix, or subtracts every element of the matrix from the scalar value, depending on the order used.
 
 **Example:**
 
-![ExampleMat](https://i.imgur.com/Znu1cUW.png)  
+![ExampleMat](https://i.imgur.com/Znu1cUW.png)    
 
 If we use the exampleMatrix1 in the following code:  
 
@@ -293,17 +325,19 @@ If we use the exampleMatrix1 in the following code:
 `exampleMatrix2 = exampleMatrix1 - constant;`  
 `exampleMatrix3 = constant - exampleMatrix1;`  
 
-`exampleMatrix2` would contain:  
+`exampleMatrix2` would contain:   
+
 ![Scalar subtraction example output1](https://i.imgur.com/T30aiNM.png)  
-and `exampleMatrix3` would contain:  
-![Scalar subtraction example output2](https://i.imgur.com/DYPQlmO.png)
+
+and `exampleMatrix3` would contain:    
+![Scalar subtraction example output2](https://i.imgur.com/DYPQlmO.png)  
 
 #### Scalar Multiplication <a name="scalarsMult"></a>
 Matrix subtraction with a scalar is handled by the overloaded (`*`). It subtracts the scalar value from every element of the matrix.
 
 **Example:**
 
-![ExampleMat](https://i.imgur.com/Znu1cUW.png)  
+![ExampleMat](https://i.imgur.com/Znu1cUW.png)    
 
 If we use the exampleMatrix1 in the following code:  
 
@@ -312,15 +346,16 @@ If we use the exampleMatrix1 in the following code:
 `exampleMatrix2 = exampleMatrix1 * constant;`  
 
 The contents of `exampleMatrix2` is:  
-![Scalar multiplication example output2](https://i.imgur.com/wLu6hSm.png)
+
+![Scalar multiplication example output2](https://i.imgur.com/wLu6hSm.png)  
 
 ## V. Utility Functions<a name="matUtil"></a>
 ### Printing the Matrix <a name="printMatrix"></a>
 This is a utility function that prints the matrix. It can be used to print out a matrix with proper formatting.
 
-**Example**
-![ExampleMat](https://i.imgur.com/jMyAutY.png)  
-
+**Example**  
+![ExampleMat](https://i.imgur.com/jMyAutY.png)    
+  
 calling:  
 
 `exampleMatrix.printMatrix();`  
