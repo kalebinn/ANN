@@ -8,11 +8,23 @@
 #ifndef ANN_H_
 #define ANN_H_
 
+#include <string>
+#include "Matrix.h"
+
 namespace KR_ANN {
 
 class ANN {
 	public:
 		ANN();
+	private:
+		// HYPERPARAMETERS //
+		int inputSize;
+		int outputSize;
+		int nLayers;
+		int *neuronsPerLayer;
+		double learningRate;
+		std::string activationFunction;
+
 };
 
 } /* namespace KR_ANN */

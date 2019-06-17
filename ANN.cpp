@@ -7,12 +7,14 @@
 
 #include "ANN.h"
 
+#include <string>
+#include "Matrix.h"
+
 namespace KR_ANN {
 
-ANN::ANN()
+ANN::ANN ()
 {
 	// TODO Auto-generated constructor stub
-
 }
 
 } /* namespace KR_ANN */
