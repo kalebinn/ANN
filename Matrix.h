@@ -16,6 +16,7 @@ class Matrix
 	public:
 		typedef double mat_value_type;
 		typedef std::size_t mat_size_type;
+		Matrix();
 		Matrix(mat_size_type rows, mat_size_type cols); // constructor
 		Matrix(std::string); // constructor that reads from file
 		Matrix(const Matrix &arg); // copy constructor

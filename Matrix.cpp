@@ -13,6 +13,12 @@
 
 namespace KR_Matrix {
 
+Matrix::Matrix()
+{
+	nRows = 0;
+	nCols = 0;
+	A = NULL;
+}
 Matrix::Matrix(mat_size_type rows, mat_size_type cols)
 {
 	// constructor
