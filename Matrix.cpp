@@ -92,7 +92,7 @@ Matrix Matrix::Transpose(void)
 }
 
 void
-Matrix::setELement (mat_size_type row, mat_size_type col, mat_value_type val)
+Matrix::setElement (mat_size_type row, mat_size_type col, mat_value_type val)
 {
 	if (row < nRows && col < nCols)
 	{

@@ -16,11 +16,17 @@ namespace KR_ANN {
 class ANN {
 	public:
 		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerLayer, double learningRate, std::string activationFunction);
+		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerLayer, double learningRate, std::string *activationFunction);
 
 		KR_Matrix::Matrix forwardPropagation(KR_Matrix::Matrix inputMatrix, KR_Matrix::Matrix *weightMatrix,
 				KR_Matrix::Matrix *biasMatrix, KR_Matrix::Matrix outputMatrix);
 
 		double Activate();
+
+		void normalDistMatrix(KR_Matrix::Matrix &matrix, double expectation, double stdev);
+		void printMembers(void);
+
+		~ANN(); // destructor
 	private:
 		// HYPERPARAMETERS //
 		int inputSize;
