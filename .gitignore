@@ -2,3 +2,6 @@
 testmain.cpp
 TestInputFile.txt
 /Release/
+NormalDistTest.cpp
+ANNtesting.cpp
+
