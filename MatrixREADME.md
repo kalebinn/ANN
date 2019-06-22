@@ -63,12 +63,14 @@ Another method of creating a matrix is by using a file. The constructor takes th
 
 `Matrix(std::string fileName);`    
 
-The file that contains the matrix must be of the following form:
+The file that contains the matrix must be of the following form:  
+  
 ![Example2](https://i.imgur.com/AkupPEP.png)
 
 where M is the number of rows, and N is the number of columns.
 
-**Example:**
+**Example:**  
+  
 ![Example](https://i.imgur.com/TywJgiP.png)
 
 When you call the constructor:  
