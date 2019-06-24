@@ -4,6 +4,7 @@ TestInputFile.txt
 /Release/
 NormalDistTest.cpp
 ANNtesting.cpp
-.project
+/.settings/
 .cproject
-.settings
+.project
+
