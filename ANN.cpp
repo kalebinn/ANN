@@ -7,6 +7,7 @@
 
 #include "ANN.h"
 
+#include <assert.h>
 #include <chrono>
 #include <iostream>
 #include <random>
@@ -38,11 +39,33 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerLayer
 	this->weights = new KR_Matrix::Matrix [nHiddenLayers+1];
 	this->biasses = new KR_Matrix::Matrix [nHiddenLayers+1];
 
+
 	// initialize the weights as a normal distribution with mu = 0, sigma^2 = 0.01;
 	double expectation = 0;
 	double standardDev = 0.01;
 	for (int i = 0; i < nHiddenLayers+1; i++)
 	{
+		if (i == 0)
+		{
+			KR_Matrix::Matrix weight_temp(inputSize, neuronsPerLayer[i]);
+			this->weights[i] = weight_temp;
+			KR_Matrix::Matrix bias_temp(1, neuronsPerLayer[i]);
+			this->biasses[i] = bias_temp;
+		}
+		else if (i == nHiddenLayers)
+		{
+			KR_Matrix::Matrix weight_temp(neuronsPerLayer[i-1],outputSize);
+			this->weights[i] = weight_temp;
+			KR_Matrix::Matrix bias_temp(1, outputSize);
+			this->biasses[i] = bias_temp;
+		}
+		else
+		{
+			KR_Matrix::Matrix weight_temp(neuronsPerLayer[i-1],neuronsPerLayer[i]);
+			this->weights[i] = weight_temp;
+			KR_Matrix::Matrix bias_temp(1, neuronsPerLayer[i]);
+			this->biasses[i] = bias_temp;
+		}
 		normalDistMatrix(this->weights[i],expectation,standardDev);
 		normalDistMatrix(this->biasses[i],expectation,standardDev);
 	}
@@ -69,32 +92,32 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerLayer
 	this->weights = new KR_Matrix::Matrix [nHiddenLayers+1];
 	this->biasses = new KR_Matrix::Matrix [nHiddenLayers+1];
 
-	// first weights matrix is
-	KR_Matrix::Matrix weightTemp (inputSize, neuronsPerLayer[0]);
-	for (int i = 0; i < nHiddenLayers+1; i++)
-	{
-		if (i == 0)
-		{
-			KR_Matrix::Matrix weightTemp (inputSize, neuronsPerLayer[i]);
-			this->weights[i] = weightTemp;
-		}
-		else if(i == nHiddenLayers)
-		{
-			KR_Matrix::Matrix weightTemp (neuronsPerLayer[i], outputSize);
-			this->weights[i] = weightTemp;
-		}
-		else
-		{
-			KR_Matrix::Matrix weightTemp (neuronsPerLayer[i-1], neuronsPerLayer[i]);
-			this->weights[i] = weightTemp;
-		}
-	}
 	// initialize the weights as a normal distribution with mu = 0, sigma^2 = 0.01;
 	double expectation = 0;
 	double standardDev = 0.01;
 	for (int i = 0; i < nHiddenLayers+1; i++)
 	{
-
+		if (i == 0)
+		{
+			KR_Matrix::Matrix weight_temp(inputSize, neuronsPerLayer[i]);
+			this->weights[i] = weight_temp;
+			KR_Matrix::Matrix bias_temp(1, neuronsPerLayer[i]);
+			this->biasses[i] = bias_temp;
+		}
+		else if (i == nHiddenLayers)
+		{
+			KR_Matrix::Matrix weight_temp(neuronsPerLayer[i-1],outputSize);
+			this->weights[i] = weight_temp;
+			KR_Matrix::Matrix bias_temp(1, outputSize);
+			this->biasses[i] = bias_temp;
+		}
+		else
+		{
+			KR_Matrix::Matrix weight_temp(neuronsPerLayer[i-1],neuronsPerLayer[i]);
+			this->weights[i] = weight_temp;
+			KR_Matrix::Matrix bias_temp(1, neuronsPerLayer[i]);
+			this->biasses[i] = bias_temp;
+		}
 		normalDistMatrix(this->weights[i],expectation,standardDev);
 		normalDistMatrix(this->biasses[i],expectation,standardDev);
 	}
@@ -124,7 +147,6 @@ void ANN::normalDistMatrix(KR_Matrix::Matrix &matrix, double expectation, double
 		for (unsigned int j = 0; j < matrix.getnCols(); j++)
 		{
 			value = nDist(generator);
-			std::cout << value << std::endl;
 			matrix.setElement(i,j, value);
 		}
 	}
@@ -136,7 +158,7 @@ void ANN::printMembers(void)
 
 	std::cout << "Input size = " << this->inputSize << std::endl;
 	std::cout << "Output size = " << this->outputSize << std::endl;
-	std::cout << "There are " << this->nHiddenLayers << " in this Neural Network" << std::endl;
+	std::cout << "There are " << this->nHiddenLayers << " Hidden Layers in this Neural Network" << std::endl;
   	for (int i = 0 ; i < this->nHiddenLayers; i++)
 	{
 		std::cout << "\tHidden Layer #" << i+1 << " has " << this->neuronsPerLayer[i] << " Neurons."<< std::endl;
