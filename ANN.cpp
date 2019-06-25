@@ -20,6 +20,12 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerLayer
 {
 	this-> inputSize = inputSize;
 	this-> outputSize = outputSize;
+
+	KR_Matrix::Matrix input(1,inputSize);
+	this->inputMatrix = input;
+	KR_Matrix::Matrix output(1,outputSize);
+	this->outputMatrix = output;
+
 	this-> nHiddenLayers = nHiddenLayers;
 	this-> learningRate = learningRate;
 	//this-> activationType = activationFunction;
@@ -75,6 +81,12 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerLayer
 {
 	this-> inputSize = inputSize;
 	this-> outputSize = outputSize;
+
+	KR_Matrix::Matrix input(1,inputSize);
+	this->inputMatrix = input;
+	KR_Matrix::Matrix output(1,outputSize);
+	this->outputMatrix = output;
+
 	this-> nHiddenLayers = nHiddenLayers;
 	this-> learningRate = learningRate;
 
@@ -127,6 +139,10 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix, KR_Matr
 {
 	KR_Matrix::Matrix output(0,0);
 
+	for (int i= 0; i < inputSize; i++)
+	{
+
+	}
 
 
 	return output;
