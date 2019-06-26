@@ -15,24 +15,26 @@ namespace KR_ANN {
 
 class ANN {
 	public:
-		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerLayer, double learningRate, std::string activationFunction);
-		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerLayer, double learningRate, std::string *activationFunction);
+		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string activationFunction);
+		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string *activationFunction);
 
-		KR_Matrix::Matrix forwardPropagation(KR_Matrix::Matrix inputMatrix, KR_Matrix::Matrix *weightMatrix,
-				KR_Matrix::Matrix *biasMatrix, KR_Matrix::Matrix outputMatrix);
+		KR_Matrix::Matrix forwardPropagation(KR_Matrix::Matrix inputMatrix);
 
-		double Activate();
-
+		KR_Matrix::Matrix Activate(std::string functionType, const KR_Matrix::Matrix &arg);
+		void createSummationMatrix();
+		void createActivationMatrix();
 		void normalDistMatrix(KR_Matrix::Matrix &matrix, double expectation, double stdev);
 		void printMembers(void);
 
 		~ANN(); // destructor
 	private:
+		int nSamples = 0;
+
 		// HYPERPARAMETERS //
 		int inputSize;
 		int outputSize;
 		int nHiddenLayers; // number of hidden layers
-		int *neuronsPerLayer; // pointer to neuronsPerLayer array (of size nHiddenLayers).
+		int *neuronsPerHiddenLayer; // pointer to neuronsPerHiddenLayer array (of size nHiddenLayers).
 		double learningRate;
 		std::string activationType;
 		std::string *activationFunctions;
