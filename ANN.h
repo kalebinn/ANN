@@ -28,6 +28,7 @@ class ANN {
 
 		friend double ReLU (double z);
 		friend double Sigmoid (double z);
+		friend double Step (double z);
 		friend double Tanh(double z);
 		friend double leakyReLU(double z, double a);
 

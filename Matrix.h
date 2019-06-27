@@ -10,6 +10,7 @@
 
 namespace KR_Matrix
 {
+//typedef double mat_value_type;
 class Matrix
 {
 	public:

@@ -233,7 +233,18 @@ double Sigmoid(double z)
 
 	return result;
 }
+double Step(double z)
+{
+	if (z > 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
 
+}
 double Tanh(double z)
 {
 	double result;
@@ -287,6 +298,10 @@ KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 			if (functionType.compare("SIGMOID") == 0)
 			{
 				activatedElement = Sigmoid(elementValue);
+			}
+			else if(functionType.compare("STEP") == 0)
+			{
+				activatedElement = Step(elementValue);
 			}
 			else if (functionType.compare("TANH") == 0)
 			{
