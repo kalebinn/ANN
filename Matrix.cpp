@@ -232,17 +232,19 @@ Matrix::operator== (const Matrix &arg)
 	return is_equal;
 }
 
-double operator *(const Matrix &Matrix1, const Matrix &Matrix2)
+Matrix operator *(const Matrix &Matrix1, const Matrix &Matrix2)
 {
-	assert(Matrix1.nRows == Matrix2.nRows);
-	assert (Matrix1.nCols == Matrix2.nCols);
+	assert (Matrix1.nCols == Matrix2.nRows);
+	Matrix dotProduct (Matrix1.nRows, Matrix2.nCols);
 
-	double dotProduct = 0;
 	for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
 	{
-		for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
+		for (Matrix::mat_size_type j = 0; j < Matrix2.nCols; j++)
 		{
-			dotProduct += (Matrix1.A[i][j] * Matrix2.A[i][j]);
+			for (Matrix::mat_size_type k = 0; k < Matrix1.nCols; k++)
+			{
+				dotProduct.A[i][j] += (Matrix1.A[i][k] * Matrix2.A[k][j]);
+			}
 		}
 	}
 

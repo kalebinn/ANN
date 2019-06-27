@@ -18,17 +18,26 @@ class ANN {
 		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string activationFunction);
 		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string *activationFunction);
 
+		void readWeights(std::string file_name);
+		void readBiasses(std::string file_name);
 		KR_Matrix::Matrix forwardPropagation(KR_Matrix::Matrix inputMatrix);
 
-		KR_Matrix::Matrix Activate(std::string functionType, const KR_Matrix::Matrix &arg);
 		void createSummationMatrix();
 		void createActivationMatrix();
+		KR_Matrix::Matrix Activate(std::string functionType, KR_Matrix::Matrix arg);
+
+		friend double ReLU (double z);
+		friend double Sigmoid (double z);
+		friend double Tanh(double z);
+		friend double leakyReLU(double z, double a);
+
 		void normalDistMatrix(KR_Matrix::Matrix &matrix, double expectation, double stdev);
 		void printMembers(void);
 
 		~ANN(); // destructor
 	private:
 		int nSamples = 0;
+		double leakyRate = 0.01;
 
 		// HYPERPARAMETERS //
 		int inputSize;
@@ -40,7 +49,7 @@ class ANN {
 		std::string *activationFunctions;
 
 		KR_Matrix::Matrix *summations;
-		KR_Matrix::Matrix *activationResults;
+		KR_Matrix::Matrix *activationMatrices;
 
 		KR_Matrix::Matrix inputMatrix;
 		KR_Matrix::Matrix *weights;

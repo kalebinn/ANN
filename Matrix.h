@@ -10,7 +10,6 @@
 
 namespace KR_Matrix
 {
-
 class Matrix
 {
 	public:
@@ -29,7 +28,7 @@ class Matrix
 		friend Matrix cat(const Matrix &Matrix1, const Matrix &Matrix2, std::string direction); // concating two matrices
 		Matrix operator= (const Matrix &arg); // assignment operator
 		bool operator== (const Matrix &arg);
-		friend double operator* (const Matrix &Matrix1, const Matrix &Matrix2); // dot (scalar) product
+		friend Matrix operator* (const Matrix &Matrix1, const Matrix &Matrix2); // dot (scalar) product
 		friend Matrix operator* (double C, const Matrix &arg); // matrix multiplied by constant
 		friend Matrix operator* (const Matrix &arg, double C) {return C*arg;};
 		friend Matrix operator+ (const Matrix &Matrix1, const Matrix &Matrix2); // matrix addition

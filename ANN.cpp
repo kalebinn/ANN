@@ -31,7 +31,7 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	this-> learningRate = learningRate;
 	//this-> activationType = activationFunction;
 
-	this-> activationResults = new KR_Matrix::Matrix [nHiddenLayers];
+	this-> activationMatrices = new KR_Matrix::Matrix [nHiddenLayers];
 	this-> summations = new KR_Matrix::Matrix [nHiddenLayers];
 
 	this-> activationFunctions = new std::string [nHiddenLayers + 1];
@@ -91,7 +91,7 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	this-> nHiddenLayers = nHiddenLayers;
 	this-> learningRate = learningRate;
 
-	this-> activationResults = new KR_Matrix::Matrix [nHiddenLayers];
+	this-> activationMatrices = new KR_Matrix::Matrix [nHiddenLayers];
 	this-> summations = new KR_Matrix::Matrix [nHiddenLayers];
 
 	this-> activationFunctions = new std::string [nHiddenLayers];
@@ -139,7 +139,7 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix)
 {
 	KR_Matrix::Matrix output(0,0);
 
-	if ((int)inputMatrix.getnRows() > this->nSamples)
+	if ((int)inputMatrix.getnRows() != this->nSamples)
 	{
 		this->nSamples = inputMatrix.getnRows();
 		createSummationMatrix();
@@ -151,70 +151,26 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix)
 		if (i == 0)
 		{
 			// input layer | first hidden layer
-
+			this->summations[i] = inputMatrix * this->weights[i];
+			this->activationMatrices[i] = ANN::Activate(this->activationFunctions[i], this->summations[i]);
 		}
 		else if(i == nHiddenLayers)
 		{
 			// last hidden layer | output layer
+			this->summations[i] = inputMatrix * this->weights[i];
+			this->activationMatrices[i] = ANN::Activate("linear", this->summations[i]);
 		}
 		else
 		{
-			// hiddenlayer[j-1] | hiddenlayer[j]
+			// hiddenlayer[i-1] | hiddenlayer[i]
+			this->summations[i] = this->activationMatrices[i-1] * this->weights[i];
+			this->activationMatrices[i] = ANN::Activate(this->activationFunctions[i], this->summations[i]);
 		}
 	}
-
+	output = this->activationMatrices[nHiddenLayers];
 
 
 	return output;
-}
-
-KR_Matrix::Matrix Activate(std::string functionType, KR_Matrix::Matrix arg)
-{
-	int nRows = arg.getnRows();
-	int nCols = arg.getnCols();
-	KR_Matrix::Matrix activatedMatrix(nRows, nCols);
-
-	for (std::string::size_type i = 0; i < functionType.length(); i++)
-	{
-		if (std::islower(functionType[i]))
-		{
-			functionType[i] = std::toupper(functionType[i]);
-		}
-	}
-
-	double elementValue;
-	if (functionType.compare("RELU") == 0)
-	{
-		for (unsigned int i = 0; i < arg.getnRows(); i++)
-		{
-			for (unsigned int j = 0; j < arg.getnCols(); j++)
-			{
-				elementValue = arg.getElement(i,j);
-				if (elementValue  <= 0 )
-				{
-					activatedMatrix.setElement(i,j,0);
-				}
-				else
-				{
-					activatedMatrix.setElement(i,j,elementValue);
-				}
-			}
-		}
-	}
-	else if (functionType.compare("SIGMOID") == 0)
-	{
-
-	}
-	else if (functionType.compare("TANH") == 0)
-	{
-
-	}
-	else
-	{
-		// default is RELU
-	}
-
-	return activatedMatrix;
 }
 
 void ANN::createSummationMatrix()
@@ -240,14 +196,122 @@ void  ANN::createActivationMatrix()
 		if (i == nHiddenLayers)
 		{
 			KR_Matrix::Matrix temp (this->nSamples, this-> outputSize);
-			this->activationResults[i] = temp;
+			this->activationMatrices[i] = temp;
 		}
 		else
 		{
 			KR_Matrix::Matrix temp (this->nSamples, this->neuronsPerHiddenLayer[i]);
-			this->activationResults[i] = temp;
+			this->activationMatrices[i] = temp;
 		}
 	}
+}
+double ReLU(double z)
+{
+	if (z  <= 0 )
+	{
+		return 0;
+	}
+	else
+	{
+		return z;
+	}
+}
+
+double Sigmoid(double z)
+{
+	double result;
+	result = 1/(1+exp(-z));
+
+	if (result > 0.9)
+	{
+		return 1;
+	}
+	else if(result < 0.1)
+	{
+		return 0;
+	}
+
+	return result;
+}
+
+double Tanh(double z)
+{
+	double result;
+	result = tanh(z);
+	if (result > 0.9)
+	{
+		return 1;
+	}
+	else if(result < 0.1)
+	{
+		return 0;
+	}
+	return result;
+}
+
+double leakyReLU(double z, double a)
+{
+	double result;
+	if (z > 0)
+	{
+		result = z;
+	}
+	else
+	{
+		result = a * z;
+	}
+	return result;
+}
+KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
+{
+	int nRows = arg.getnRows();
+	int nCols = arg.getnCols();
+	KR_Matrix::Matrix activatedMatrix(nRows, nCols);
+
+	for (std::string::size_type i = 0; i < functionType.length(); i++)
+	{
+		if (std::islower(functionType[i]))
+		{
+			functionType[i] = std::toupper(functionType[i]);
+		}
+	}
+
+	double elementValue;
+	double activatedElement;
+
+	for (std::size_t i = 0; i < arg.getnRows(); i++)
+	{
+		for (std::size_t j = 0 ;j < arg.getnCols(); j++)
+		{
+			elementValue = arg.getElement(i,j);
+			if (functionType.compare("SIGMOID") == 0)
+			{
+				activatedElement = Sigmoid(elementValue);
+			}
+			else if (functionType.compare("TANH") == 0)
+			{
+				activatedElement = Tanh(elementValue);
+			}
+			else if (functionType.compare("LEAKYRELU") == 0)
+			{
+				activatedElement = leakyReLU(elementValue, leakyRate);
+			}
+			else if (functionType.compare("LINEAR") == 0)
+			{
+				activatedElement = elementValue;
+			}
+			else
+			{
+				// default is relu
+				activatedElement = ReLU(elementValue);
+			}
+			activatedMatrix.setElement(i,j,activatedElement);
+		}
+	}
+
+
+
+	return activatedMatrix;
 }
 
 void ANN::normalDistMatrix(KR_Matrix::Matrix &matrix, double expectation, double stdev)
@@ -301,7 +365,7 @@ ANN::~ANN()
 {
 	// deallocate all dynamically allocated member from constructor
 	delete [] this->neuronsPerHiddenLayer;
-	delete [] this->activationResults;
+	delete [] this->activationMatrices;
 	delete [] this->activationFunctions;
 	delete [] this->summations;
 	delete [] this->weights;
