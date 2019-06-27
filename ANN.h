@@ -18,8 +18,8 @@ class ANN {
 		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string activationFunction);
 		ANN(int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string *activationFunction);
 
-		void readWeights(std::string file_name);
-		void readBiasses(std::string file_name);
+		void readWeights(std::string *file_names);
+		void readBiasses(std::string *file_names);
 		KR_Matrix::Matrix forwardPropagation(KR_Matrix::Matrix inputMatrix);
 
 		void createSummationMatrix();

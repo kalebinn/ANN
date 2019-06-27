@@ -135,6 +135,24 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 		normalDistMatrix(this->biasses[i],expectation,standardDev);
 	}
 }
+
+void ANN::readBiasses(std::string *file_names)
+{
+	for (int i = 0; i < this->nHiddenLayers+1; i++)
+	{
+
+
+	}
+}
+
+void ANN::readWeights(std::string *file_names)
+{
+	std::string temp;
+
+}
+
+
+
 KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix)
 {
 	KR_Matrix::Matrix output(0,0);
