@@ -38,6 +38,7 @@ class Matrix
 		friend Matrix operator- (const Matrix &Matrix1, const Matrix &Matrix2); // matrix subtraction
 		friend Matrix operator- (double C, const Matrix &arg);
 		friend Matrix operator- (const Matrix &arg ,double C){return C - arg;};
+		void printMatrix(std::string file);
 		void printMatrix(void);
 		~Matrix(); // Destructor
 

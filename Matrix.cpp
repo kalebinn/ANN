@@ -269,17 +269,43 @@ Matrix operator *(double C, const Matrix &arg)
 Matrix operator + (const Matrix &Matrix1, const Matrix &Matrix2)
 {
 	//assert(Matrix1.nRows == Matrix2.nRows && Matrix1.nCols == Matrix2.nCols);
-	assert(Matrix1.nRows == Matrix2.nRows);
-	assert (Matrix1.nCols == Matrix2.nCols);
+	//assert(Matrix1.nRows == Matrix2.nRows);
+	//assert (Matrix1.nCols == Matrix2.nCols);
 
 	Matrix Output(Matrix1.nRows, Matrix1.nCols);
-
-	for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
+	if (Matrix1.nRows == Matrix2.nRows && Matrix1.nCols == Matrix2.nCols)
 	{
-		for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
+		for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
 		{
-			Output.A[i][j] = Matrix1.A[i][j] + Matrix2.A[i][j];
+			for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
+			{
+				Output.A[i][j] = Matrix1.A[i][j] + Matrix2.A[i][j];
+			}
 		}
+	}
+	else if(Matrix1.nRows != Matrix2.nRows && Matrix1.nCols == Matrix2.nCols)
+	{
+		for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
+		{
+			for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
+			{
+				Output.A[i][j] = Matrix1.A[i][j] + Matrix2.A[0][j];
+			}
+		}
+	}
+	else if(Matrix1.nRows == Matrix2.nRows && Matrix1.nCols != Matrix2.nCols)
+	{
+		for (Matrix::mat_size_type i = 0; i < Matrix1.nRows; i++)
+		{
+			for (Matrix::mat_size_type j = 0; j < Matrix1.nCols; j++)
+			{
+				Output.A[i][j] = Matrix1.A[i][j] + Matrix2.A[i][0];
+			}
+		}
+	}
+	else
+	{
+		std::cout << "yo these dimensions are fucked bro" << std::endl;
 	}
 	return Output;
 }
@@ -331,6 +357,21 @@ Matrix operator -(double C, const Matrix &arg)
 	}
 
 	return Output;
+}
+
+void Matrix::printMatrix(std::string file)
+{
+	std::ofstream outputFile(file, std::ios::out);
+
+	for (Matrix::mat_size_type i = 0; i < nRows; i++)
+	{
+		for (Matrix::mat_size_type j = 0; j < nCols; j++)
+		{
+			 outputFile << A[i][j] << "\t";
+		}
+		outputFile << std::endl;
+	}
+	outputFile<<std::endl;
 }
 
 void Matrix::printMatrix()

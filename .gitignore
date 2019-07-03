@@ -8,4 +8,21 @@ ANNtesting.cpp
 .cproject
 .project
 testmain2.cpp
+Weights1.txt
+Weights2.txt
+Weights3.txt
+Weights4.txt
+Weights5.txt
+Bias1.txt
+Bias2.txt
+Bias3.txt
+Bias4.txt
+Bias5.txt
+ForwardPropTest.m
+Activations.txt
+Summations.txt
+Activations.txt
+ForwardPropTest.asv
+inputmat.txt
+output.txt
 

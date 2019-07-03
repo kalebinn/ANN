@@ -19,6 +19,7 @@ namespace KR_ANN {
 
 ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string activationFunction)
 {
+
 	this-> inputSize = inputSize;
 	this-> outputSize = outputSize;
 
@@ -31,8 +32,8 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	this-> learningRate = learningRate;
 	//this-> activationType = activationFunction;
 
-	this-> activationMatrices = new KR_Matrix::Matrix [nHiddenLayers];
-	this-> summations = new KR_Matrix::Matrix [nHiddenLayers];
+	this-> activationMatrices = new KR_Matrix::Matrix [nHiddenLayers+1];
+	this-> summations = new KR_Matrix::Matrix [nHiddenLayers+1];
 
 	this-> activationFunctions = new std::string [nHiddenLayers + 1];
 	this-> neuronsPerHiddenLayer = new int [nHiddenLayers + 1];
@@ -43,6 +44,7 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 		this-> neuronsPerHiddenLayer[i] = neuronsPerHiddenLayer[i];
 		this-> activationFunctions[i] = activationFunction;
 	}
+
 	this->weights = new KR_Matrix::Matrix [nHiddenLayers+1];
 	this->biasses = new KR_Matrix::Matrix [nHiddenLayers+1];
 
@@ -91,10 +93,10 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	this-> nHiddenLayers = nHiddenLayers;
 	this-> learningRate = learningRate;
 
-	this-> activationMatrices = new KR_Matrix::Matrix [nHiddenLayers];
-	this-> summations = new KR_Matrix::Matrix [nHiddenLayers];
+	this-> activationMatrices = new KR_Matrix::Matrix [nHiddenLayers+1];
+	this-> summations = new KR_Matrix::Matrix [nHiddenLayers+1];
 
-	this-> activationFunctions = new std::string [nHiddenLayers];
+	this-> activationFunctions = new std::string [nHiddenLayers+1];
 	this-> neuronsPerHiddenLayer = new int [nHiddenLayers];
 	for (int i = 0; i < nHiddenLayers; i++)
 	{
@@ -136,93 +138,62 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	}
 }
 
-void ANN::readBiasses(std::string *file_names)
+KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix, std::string *weights, std::string *baises)
 {
-	for (int i = 0; i < this->nHiddenLayers+1; i++)
-	{
-
-
-	}
-}
-
-void ANN::readWeights(std::string *file_names)
-{
-	std::string temp;
-
-}
-
-
-
-KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix)
-{
-	KR_Matrix::Matrix output(0,0);
+	std::string summationsFile = "Summations.txt";
+	std::string activationsFile = "Activations.txt";
+	std::string outputFile = "output.txt";
 
 	if ((int)inputMatrix.getnRows() != this->nSamples)
 	{
 		this->nSamples = inputMatrix.getnRows();
-		createSummationMatrix();
-		createActivationMatrix();
-	}
+		createSummationsandActivations();
 
-	for (int i = 0 ; i < nHiddenLayers+1; i++)
+	}
+	KR_Matrix::Matrix output(this->nSamples,this->outputSize);
+	readWeights(weights);
+	readBiasses(baises);
+
+	this->summations[0] = (inputMatrix * this->weights[0]) + this->biasses[0];
+	this->activationMatrices[0] = ANN::Activate(this->activationFunctions[0], this->summations[0]);
+
+	for (int i = 1 ; i < nHiddenLayers+1; i++)
 	{
-		if (i == 0)
-		{
-			// input layer | first hidden layer
-			this->summations[i] = inputMatrix * this->weights[i];
-			this->activationMatrices[i] = ANN::Activate(this->activationFunctions[i], this->summations[i]);
-		}
-		else if(i == nHiddenLayers)
+		if(i == nHiddenLayers)
 		{
 			// last hidden layer | output layer
-			this->summations[i] = inputMatrix * this->weights[i];
+			this->summations[i] = (this->activationMatrices[i-1] * this->weights[i]) + this->biasses[i];
+			this->summations[i].printMatrix(summationsFile);
 			this->activationMatrices[i] = ANN::Activate("linear", this->summations[i]);
 		}
 		else
 		{
 			// hiddenlayer[i-1] | hiddenlayer[i]
-			this->summations[i] = this->activationMatrices[i-1] * this->weights[i];
+			this->summations[i] = (this->activationMatrices[i-1] * this->weights[i]) + this->biasses[i];
+			this->summations[i].printMatrix("Summations.txt");
 			this->activationMatrices[i] = ANN::Activate(this->activationFunctions[i], this->summations[i]);
 		}
 	}
+
 	output = this->activationMatrices[nHiddenLayers];
-
-
+	//output.printMatrix(outputFile);
 	return output;
 }
 
-void ANN::createSummationMatrix()
+void ANN::createSummationsandActivations()
 {
-	for (int i = 0; i < this->nHiddenLayers+1; i++)
+	for (int i = 0; i < this->nHiddenLayers; i++)
 	{
-		if (i == nHiddenLayers)
-		{
-			KR_Matrix::Matrix temp (this->nSamples, this-> outputSize);
-			this->summations[i] = temp;
-		}
-		else
-		{
-			KR_Matrix::Matrix temp (this->nSamples, this->neuronsPerHiddenLayer[i]);
-			this->summations[i] = temp;
-		}
+		KR_Matrix::Matrix temp (this->nSamples, this->neuronsPerHiddenLayer[i]);
+		this->summations[i] = temp;
+		this->activationMatrices[i] = temp;
 	}
+
+	KR_Matrix::Matrix temp (this->nSamples, this->outputSize);
+	this->summations[this->nHiddenLayers] = temp;
+	this->activationMatrices[this->nHiddenLayers] = temp;
 }
-void  ANN::createActivationMatrix()
-{
-	for (int i = 0; i < this->nHiddenLayers+1; i++)
-	{
-		if (i == nHiddenLayers)
-		{
-			KR_Matrix::Matrix temp (this->nSamples, this-> outputSize);
-			this->activationMatrices[i] = temp;
-		}
-		else
-		{
-			KR_Matrix::Matrix temp (this->nSamples, this->neuronsPerHiddenLayer[i]);
-			this->activationMatrices[i] = temp;
-		}
-	}
-}
+
 double ReLU(double z)
 {
 	if (z  <= 0 )
@@ -248,8 +219,10 @@ double Sigmoid(double z)
 	{
 		return 0;
 	}
-
-	return result;
+	else
+	{
+		return result;
+	}
 }
 double Step(double z)
 {
@@ -345,6 +318,25 @@ KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 
 
 	return activatedMatrix;
+}
+
+void ANN::readBiasses(std::string *biasFileNames)
+{
+	for (int i = 0; i < this->nHiddenLayers + 1; i++)
+	{
+		KR_Matrix::Matrix temp(biasFileNames[i]);
+		this->biasses[i] = temp;
+	}
+}
+
+void ANN::readWeights(std::string *weightFileNames)
+{
+	for (int i = 0; i < this->nHiddenLayers + 1; i++)
+	{
+		//std::cout << "i = " << i << "\tfile name = " << weightFileNames[i]<< std::endl;
+		KR_Matrix::Matrix temp(weightFileNames[i]);
+		this->weights[i] = temp;
+	}
 }
 
 void ANN::normalDistMatrix(KR_Matrix::Matrix &matrix, double expectation, double stdev)
