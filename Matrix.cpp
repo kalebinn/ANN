@@ -94,14 +94,21 @@ Matrix Matrix::Transpose(void)
 void
 Matrix::setElement (mat_size_type row, mat_size_type col, mat_value_type val)
 {
-	if (row < nRows && col < nCols)
+	try
 	{
-		A[row][col] = val;
+		if (row >= nRows || col > nCols)
+		{
+			throw 11;
+		}
 	}
-	else
+	catch(int errorNum)
 	{
-		std::cout << "check inputs" << std::endl;
+		std::cout << "FATAL ERROR #" << errorNum << " - setElement failed. Check inputs." << std::endl;
+		std::cout << "SUGGESTION: the size of this matrix is: " << this->nRows << " by " << this->nCols << std::endl;
 	}
+	assert(row < this->nRows && col < this->nCols);
+	A[row][col] = val;
+
 }
 
 Matrix::mat_value_type Matrix::getElement(mat_size_type row, mat_size_type col)
