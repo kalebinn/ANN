@@ -303,10 +303,7 @@ Matrix operator + (const Matrix &Matrix1, const Matrix &Matrix2)
 			}
 		}
 	}
-	else
-	{
-		std::cout << "yo these dimensions are fucked bro" << std::endl;
-	}
+	else{}
 	return Output;
 }
 

@@ -9,6 +9,7 @@
 
 #include <assert.h>
 #include <chrono>
+#include <fstream>
 #include <iostream>
 #include <random>
 #include <string>
@@ -17,13 +18,13 @@
 
 namespace KR_ANN {
 
-ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string activationFunction)
+ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string activationFunction)
 {
 
-	this-> inputSize = inputSize;
+	this-> nFeatures = nFeatures;
 	this-> outputSize = outputSize;
 
-	KR_Matrix::Matrix input(1,inputSize);
+	KR_Matrix::Matrix input(1,nFeatures);
 	this->inputMatrix = input;
 	KR_Matrix::Matrix output(1,outputSize);
 	this->outputMatrix = output;
@@ -56,7 +57,7 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	{
 		if (i == 0)
 		{
-			KR_Matrix::Matrix weight_temp(inputSize, neuronsPerHiddenLayer[i]);
+			KR_Matrix::Matrix weight_temp(nFeatures, neuronsPerHiddenLayer[i]);
 			this->weights[i] = weight_temp;
 			KR_Matrix::Matrix bias_temp(1, neuronsPerHiddenLayer[i]);
 			this->biasses[i] = bias_temp;
@@ -80,12 +81,12 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	}
 }
 
-ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string *activationFunction)
+ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string *activationFunction)
 {
-	this-> inputSize = inputSize;
+	this-> nFeatures = nFeatures;
 	this-> outputSize = outputSize;
 
-	KR_Matrix::Matrix input(1,inputSize);
+	KR_Matrix::Matrix input(1,nFeatures);
 	this->inputMatrix = input;
 	KR_Matrix::Matrix output(1,outputSize);
 	this->outputMatrix = output;
@@ -114,7 +115,7 @@ ANN::ANN (int inputSize, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	{
 		if (i == 0)
 		{
-			KR_Matrix::Matrix weight_temp(inputSize, neuronsPerHiddenLayer[i]);
+			KR_Matrix::Matrix weight_temp(nFeatures, neuronsPerHiddenLayer[i]);
 			this->weights[i] = weight_temp;
 			KR_Matrix::Matrix bias_temp(1, neuronsPerHiddenLayer[i]);
 			this->biasses[i] = bias_temp;
@@ -144,18 +145,23 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix, std::st
 	std::string activationsFile = "Activations.txt";
 	std::string outputFile = "output.txt";
 
+	// if the number of samples is greater than nSamples, create new Summations and Activation Matrices
 	if ((int)inputMatrix.getnRows() != this->nSamples)
 	{
 		this->nSamples = inputMatrix.getnRows();
 		createSummationsandActivations();
 
 	}
+	// the output matrix is of size nSample by outputSize
 	KR_Matrix::Matrix output(this->nSamples,this->outputSize);
-	readWeights(weights);
-	readBiasses(baises);
 
+	std::cout << "First hidden layer:" << std::endl;
 	this->summations[0] = (inputMatrix * this->weights[0]) + this->biasses[0];
+	std::cout << "Summation" << std::endl;
+	this->summations[0].printMatrix();
 	this->activationMatrices[0] = ANN::Activate(this->activationFunctions[0], this->summations[0]);
+	std::cout << "Activations" << std::endl;
+	this->activationMatrices[0].printMatrix();
 
 	for (int i = 1 ; i < nHiddenLayers+1; i++)
 	{
@@ -164,6 +170,7 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix, std::st
 			// last hidden layer | output layer
 			this->summations[i] = (this->activationMatrices[i-1] * this->weights[i]) + this->biasses[i];
 			this->summations[i].printMatrix(summationsFile);
+			std::cout << "Summation" << std::endl;
 			this->activationMatrices[i] = ANN::Activate("linear", this->summations[i]);
 		}
 		else
@@ -171,12 +178,16 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix, std::st
 			// hiddenlayer[i-1] | hiddenlayer[i]
 			this->summations[i] = (this->activationMatrices[i-1] * this->weights[i]) + this->biasses[i];
 			this->summations[i].printMatrix("Summations.txt");
+			std::cout << "Summation" << std::endl;
+			this->summations[i].printMatrix();
 			this->activationMatrices[i] = ANN::Activate(this->activationFunctions[i], this->summations[i]);
+			std::cout << "Activation" << std::endl;
+			this->activationMatrices[i].printMatrix();
 		}
 	}
 
 	output = this->activationMatrices[nHiddenLayers];
-	//output.printMatrix(outputFile);
+	output.printMatrix();
 	return output;
 }
 
@@ -309,6 +320,8 @@ KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 			else
 			{
 				// default is relu
+				std::cout << "WARNING: Unsupported activation function type - Using ReLU " << std::endl;
+				std::cout << "SUGGESTION: Supported activations - LeakyReLU, ReLU, Sigmoid, Step, Tanh" << std::endl << std::endl;
 				activatedElement = ReLU(elementValue);
 			}
 			activatedMatrix.setElement(i,j,activatedElement);
@@ -320,13 +333,97 @@ KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 	return activatedMatrix;
 }
 
-void ANN::readBiasses(std::string *biasFileNames)
+int  ANN::readBiasses(std::string *biasFileNames)
 {
+	/*
 	for (int i = 0; i < this->nHiddenLayers + 1; i++)
 	{
-		KR_Matrix::Matrix temp(biasFileNames[i]);
-		this->biasses[i] = temp;
+		try
+		{
+			KR_Matrix::Matrix temp(biasFileNames[i]);
+			if (temp.getnRows() != 1 || this->biasses[i].getnCols() != temp.getnCols())
+			{
+				throw 66; // decimal representation of UNICODE for letter "B"
+			}
+			this->biasses[i] = temp;
+		}
+		catch(int x)
+		{
+			std::cout << "ERROR #" << x <<": CHECK BIAS FILE NUMBER " << i+1 << std::endl;
+			std::cout << "PROPER DIMENSIONS ARE " << 1 << " BY " << this->biasses[i].getnCols() << std::endl;
+			return x;
+		}
 	}
+	*/
+
+	return 0;
+}
+int ANN::readBias(std::string file_name)
+{
+	std::ifstream biasFile (file_name, std::ios::in);
+	int nMatrices;
+	biasFile >> nMatrices;
+
+	// check if biasFile has proper number of matrices
+	try
+	{
+		if (nMatrices != nHiddenLayers + 1)
+		{
+				throw 42; // error number for mismatched matrix amounts
+		}
+	}
+	catch (int errNum)
+	{
+		std::cout << "FATAL ERROR: " << errNum << " - number of matrices in " << file_name
+				<< " does not match number of hidden layers + output layer" << std::endl;
+		return errNum; // do not proceed with reading the file
+	}
+
+	// read in matrices if good
+
+	double elementVal = 0;
+	int tempRows = 0;
+	int tempCols = 0;
+	for (int i = 0; i < nMatrices; i++)
+	{
+		biasFile >> tempRows >> tempCols; // read in nRows and nCols
+
+		KR_Matrix::Matrix temp(tempRows, tempCols); // create matrix
+		try // check if dimensions are ok
+		{
+			if (this->biasses[i].getnRows() != temp.getnRows() || this->biasses[i].getnCols() != temp.getnCols())
+			{
+				throw 66;  //decimal representation of UNICODE for "B" (BIAS ERROR)
+			}
+		}
+		catch(int errNum)
+		{
+			if (i < nHiddenLayers)
+			{
+				std::cout << "FATAL ERROR: " << errNum << " Error in bias matrix dimensions for hidden layer #"<< i + 1 << std::endl;
+			}
+			else
+			{
+				std::cout << "FATAL ERROR: " << errNum << " Error in bias matrix dimensions for output layer" << std::endl;
+			}
+			std::cout << "SUGGESTION: proper dimensions should be "
+									<< this->biasses[i].getnRows() << " by "
+									<<  this->biasses[i].getnCols() << std::endl;
+			temp.~Matrix(); // manually destroy matrix
+			return errNum; // do not proceed
+		}
+
+		// fill the bias matrix
+		for (int j = 0; j < tempRows; j++)
+		{
+			for (int k = 0; k < tempCols; k++)
+			{
+				biasFile >> elementVal;
+				this->biasses[i].setElement(j,k,elementVal);
+			}
+		}
+	}
+	return 0;
 }
 
 void ANN::readWeights(std::string *weightFileNames)
@@ -335,8 +432,79 @@ void ANN::readWeights(std::string *weightFileNames)
 	{
 		//std::cout << "i = " << i << "\tfile name = " << weightFileNames[i]<< std::endl;
 		KR_Matrix::Matrix temp(weightFileNames[i]);
+		assert(this->weights[i].getnRows() == temp.getnRows() && this->weights[i].getnCols() == temp.getnCols());
 		this->weights[i] = temp;
 	}
+}
+
+int ANN::readWeights(std::string fileName)
+{
+	std::ifstream weightFile (fileName, std::ios::in);
+	int nMatrices;
+	weightFile >> nMatrices;
+
+	// check if weightFile has proper number of matrices
+	try
+	{
+		if (nMatrices != nHiddenLayers + 1)
+		{
+				throw 42; // error number for mismatched matrix amounts
+		}
+	}
+	catch (int errNum)
+	{
+		std::cout << "FATAL ERROR: " << errNum << " - number of matrices in " << fileName
+				<< " does not match number of hidden layers + output layer" << std::endl;
+		std::cout << "SUGGESTION: Neural Network has " << this->nHiddenLayers << " Hidden layers"
+				<< "and 1 output layer. Try " << this->nHiddenLayers+1 << " Weight Matrices."<< std::endl;
+		return errNum; // do not proceed with reading the file
+	}
+	// read in matrices if good
+
+	double elementVal = 0;
+	int tempRows = 0;
+	int tempCols = 0;
+	for (int i = 0; i < nMatrices; i++)
+	{
+		weightFile >> tempRows >> tempCols;
+		KR_Matrix::Matrix temp(tempRows, tempCols);
+		try // check if dimensions are ok
+		{
+			if (this->weights[i].getnRows() != temp.getnRows() || this->weights[i].getnCols() != temp.getnCols())
+			{
+				throw 66;  //decimal representation of UNICODE for "B" (BIAS ERROR)
+			}
+		}
+		catch(int errNum)
+		{
+			if (i < nHiddenLayers)
+			{
+				std::cout << "FATAL ERROR: " << errNum << " Error in bias matrix dimensions for hidden layer #"<< i + 1 << std::endl;
+			}
+			else
+			{
+				std::cout << "FATAL ERROR: " << errNum << " Error in bias matrix dimensions for output layer" << std::endl;
+			}
+			std::cout << "SUGGESTION: proper dimensions should be "
+									<< this->weights[i].getnRows() << " by "
+									<<  this->weights[i].getnCols() << std::endl;
+			temp.~Matrix(); // manually destroy matrix
+			return errNum; // do not proceed
+		}
+
+		// fill the weight matrix array
+		for (int j = 0; j < tempRows; j++)
+		{
+			for (int k = 0; k < tempCols; k++)
+			{
+				weightFile >> elementVal;
+				this->weights[i].setElement(j,k,elementVal);
+			}
+		}
+
+	}
+	return 0;
+
 }
 
 void ANN::normalDistMatrix(KR_Matrix::Matrix &matrix, double expectation, double stdev)
@@ -363,7 +531,7 @@ void ANN::normalDistMatrix(KR_Matrix::Matrix &matrix, double expectation, double
 void ANN::printMembers(void)
 {
 
-	std::cout << "Input size = " << this->inputSize << std::endl;
+	std::cout << "Number of Features = " << this->nFeatures << std::endl;
 	std::cout << "Output size = " << this->outputSize << std::endl;
 	std::cout << "There are " << this->nHiddenLayers << " Hidden Layers in this Neural Network" << std::endl;
   	for (int i = 0 ; i < this->nHiddenLayers; i++)
