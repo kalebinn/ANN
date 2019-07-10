@@ -18,12 +18,14 @@
 
 namespace KR_ANN {
 
-ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string activationFunction)
+ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string activationFunction,
+		double weightDecay)
 {
 
 	this-> nFeatures = nFeatures;
 	this-> outputSize = outputSize;
 
+	this->weightDecay = weightDecay;
 	KR_Matrix::Matrix input(1,nFeatures);
 	this->inputMatrix = input;
 	KR_Matrix::Matrix output(1,outputSize);
@@ -81,15 +83,18 @@ ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	}
 }
 
-ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string *activationFunction)
+ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHiddenLayer, double learningRate, std::string *activationFunction,
+		double weightDecay)
 {
 	this-> nFeatures = nFeatures;
 	this-> outputSize = outputSize;
 
+	this->weightDecay = weightDecay;
 	KR_Matrix::Matrix input(1,nFeatures);
 	this->inputMatrix = input;
 	KR_Matrix::Matrix output(1,outputSize);
 	this->outputMatrix = output;
+
 
 	this-> nHiddenLayers = nHiddenLayers;
 	this-> learningRate = learningRate;
@@ -139,7 +144,8 @@ ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	}
 }
 
-KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix, std::string *weights, std::string *baises)
+
+KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix)
 {
 	std::string summationsFile = "Summations.txt";
 	std::string activationsFile = "Activations.txt";
@@ -155,39 +161,38 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix, std::st
 	// the output matrix is of size nSample by outputSize
 	KR_Matrix::Matrix output(this->nSamples,this->outputSize);
 
-	std::cout << "First hidden layer:" << std::endl;
+	// input layer | first hidden layer
+	std::cout << "--Forward Propagation beginning--" << std::endl;
+	std::cout << "Computing Hidden Layer # 1 ..." << std::endl;
 	this->summations[0] = (inputMatrix * this->weights[0]) + this->biasses[0];
-	std::cout << "Summation" << std::endl;
-	this->summations[0].printMatrix();
 	this->activationMatrices[0] = ANN::Activate(this->activationFunctions[0], this->summations[0]);
-	std::cout << "Activations" << std::endl;
-	this->activationMatrices[0].printMatrix();
-
+	std::cout << '\t' << "Hidden Layer #1 Completed." << std::endl;
 	for (int i = 1 ; i < nHiddenLayers+1; i++)
 	{
 		if(i == nHiddenLayers)
 		{
 			// last hidden layer | output layer
+			std::cout << "Computing Output layer" << std::endl;
 			this->summations[i] = (this->activationMatrices[i-1] * this->weights[i]) + this->biasses[i];
-			this->summations[i].printMatrix(summationsFile);
-			std::cout << "Summation" << std::endl;
+			//this->summations[i].printMatrix(summationsFile);
 			this->activationMatrices[i] = ANN::Activate("linear", this->summations[i]);
 		}
 		else
 		{
 			// hiddenlayer[i-1] | hiddenlayer[i]
+			std::cout << "Hidden Layer # " << i+1 << std::endl;
 			this->summations[i] = (this->activationMatrices[i-1] * this->weights[i]) + this->biasses[i];
-			this->summations[i].printMatrix("Summations.txt");
-			std::cout << "Summation" << std::endl;
-			this->summations[i].printMatrix();
 			this->activationMatrices[i] = ANN::Activate(this->activationFunctions[i], this->summations[i]);
-			std::cout << "Activation" << std::endl;
-			this->activationMatrices[i].printMatrix();
+			std::cout << '\t' << "Hidden Layer # " << i+1 << " Completed." << std::endl;
 		}
 	}
 
 	output = this->activationMatrices[nHiddenLayers];
+	std::cout << '\t' << "Output layer Completed." << std::endl;
+	std::cout << "Output = " << std::endl;
 	output.printMatrix();
+	output.printMatrix("output.txt");
+	this->outputMatrix = output;
 	return output;
 }
 
@@ -275,12 +280,15 @@ double leakyReLU(double z, double a)
 	}
 	return result;
 }
+
 KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 {
 	int nRows = arg.getnRows();
 	int nCols = arg.getnCols();
 	KR_Matrix::Matrix activatedMatrix(nRows, nCols);
 
+	// change all letters in string to capital
+	// to remove case sensitivity in activation functions
 	for (std::string::size_type i = 0; i < functionType.length(); i++)
 	{
 		if (std::islower(functionType[i]))
@@ -292,12 +300,18 @@ KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 	double elementValue;
 	double activatedElement;
 
+	// apple the activation function to every element in the input matrix (arg)
 	for (std::size_t i = 0; i < arg.getnRows(); i++)
 	{
 		for (std::size_t j = 0 ;j < arg.getnCols(); j++)
 		{
 			elementValue = arg.getElement(i,j);
-			if (functionType.compare("SIGMOID") == 0)
+
+			if (functionType.compare("RELU") == 0)
+			{
+				activatedElement = ReLU(elementValue);
+			}
+			else if (functionType.compare("SIGMOID") == 0)
 			{
 				activatedElement = Sigmoid(elementValue);
 			}
@@ -327,37 +341,77 @@ KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 			activatedMatrix.setElement(i,j,activatedElement);
 		}
 	}
-
-
-
 	return activatedMatrix;
 }
 
-int  ANN::readBiasses(std::string *biasFileNames)
+double ANN::Cost(KR_Matrix::Matrix expectedOutput)
 {
-	/*
-	for (int i = 0; i < this->nHiddenLayers + 1; i++)
+	// compute the one half square mean cost with weight decay
+	double cost = 0;
+	try
 	{
-		try
+		if (this->outputMatrix.getnRows() != expectedOutput.getnRows() || this->outputMatrix.getnCols() != expectedOutput.getnCols())
 		{
-			KR_Matrix::Matrix temp(biasFileNames[i]);
-			if (temp.getnRows() != 1 || this->biasses[i].getnCols() != temp.getnCols())
-			{
-				throw 66; // decimal representation of UNICODE for letter "B"
-			}
-			this->biasses[i] = temp;
-		}
-		catch(int x)
-		{
-			std::cout << "ERROR #" << x <<": CHECK BIAS FILE NUMBER " << i+1 << std::endl;
-			std::cout << "PROPER DIMENSIONS ARE " << 1 << " BY " << this->biasses[i].getnCols() << std::endl;
-			return x;
+			throw 110;
 		}
 	}
-	*/
+	catch (int errorID)
+	{
+		std::cout << "ERROR NUMBER : " << errorID << " - Output matrix and expected output matrix are not the same size." << std::endl;
+		std::cout << "Suggestion: The output matrix size is " << this->outputMatrix.getnRows() << " by " << this->outputMatrix.getnCols() << std::endl;
+	}
 
-	return 0;
+	int numberOfSamples = outputMatrix.getnRows();
+	double outputElement = 0;
+	double expectedOutputElement = 0;
+	double difference = 0;
+
+	// error without weight decay
+	for (int i = 0 ; i < numberOfSamples; i++)
+	{
+		for (int j = 0 ; j < this->outputSize; j++)
+		{
+			outputElement = this->outputMatrix.getElement(i,j);
+			expectedOutputElement = expectedOutput.getElement(i,j);
+
+			difference = fabs(expectedOutputElement - outputElement);
+			cost += (pow(difference,2.0)/2);
+		}
+	}
+
+	double coeff = 1.0/numberOfSamples;
+	cost *= coeff; // the cost without the weight decay portion
+std::cout << "cost = " << cost << std::endl;
+	double weightDecayTerm = 0;
+	if (this->weightDecay != 0)
+	{
+		// if weight decay is NOT 0, we must compute the weight decay term
+		double weightTotal = 0;
+		int weightRows;
+		int weightCols;
+		for (int i = 0; i < this->nHiddenLayers + 1; i++)
+		{
+			weightRows = this->weights[i].getnRows();
+			weightCols = this->weights[i].getnCols();
+			for (int j = 0; j < weightRows; j++)
+			{
+				for (int k = 0; k < weightCols; k++)
+				{
+					weightTotal += this->weights[i].getElement(j,k);
+				}
+			}
+		}
+		std::cout << "The total of the weights is = " << weightTotal << std::endl;
+		weightDecayTerm = (this->weightDecay/2) * weightTotal;
+	}
+
+	std::cout << "weightDecayTerm = " << weightDecayTerm <<  std::endl;
+	std::cout << "cost = " << cost << std::endl;
+	cost = cost - weightDecayTerm;
+	std::cout << "Final cost = " << cost << std::endl;
+	return cost;
 }
+
 int ANN::readBias(std::string file_name)
 {
 	std::ifstream biasFile (file_name, std::ios::in);
@@ -406,9 +460,11 @@ int ANN::readBias(std::string file_name)
 			{
 				std::cout << "FATAL ERROR: " << errNum << " Error in bias matrix dimensions for output layer" << std::endl;
 			}
+
 			std::cout << "SUGGESTION: proper dimensions should be "
 									<< this->biasses[i].getnRows() << " by "
 									<<  this->biasses[i].getnCols() << std::endl;
+
 			temp.~Matrix(); // manually destroy matrix
 			return errNum; // do not proceed
 		}
@@ -424,17 +480,6 @@ int ANN::readBias(std::string file_name)
 		}
 	}
 	return 0;
-}
-
-void ANN::readWeights(std::string *weightFileNames)
-{
-	for (int i = 0; i < this->nHiddenLayers + 1; i++)
-	{
-		//std::cout << "i = " << i << "\tfile name = " << weightFileNames[i]<< std::endl;
-		KR_Matrix::Matrix temp(weightFileNames[i]);
-		assert(this->weights[i].getnRows() == temp.getnRows() && this->weights[i].getnCols() == temp.getnCols());
-		this->weights[i] = temp;
-	}
 }
 
 int ANN::readWeights(std::string fileName)
@@ -483,7 +528,7 @@ int ANN::readWeights(std::string fileName)
 			}
 			else
 			{
-				std::cout << "FATAL ERROR: " << errNum << " Error in bias matrix dimensions for output layer" << std::endl;
+				std::cout << "FATAL ERROR: " << errNum << " Error in weights matrix dimensions for output layer" << std::endl;
 			}
 			std::cout << "SUGGESTION: proper dimensions should be "
 									<< this->weights[i].getnRows() << " by "
@@ -552,6 +597,8 @@ void ANN::printMembers(void)
 		std::cout << "biasMatrix[" << i << "] = " << std::endl << std::endl;
 		this->biasses[i].printMatrix();
 	}
+
+	std::cout << "weight decay term = " << this->weightDecay << std::endl;
 }
 
 ANN::~ANN()
