@@ -30,8 +30,9 @@ class ANN {
 		friend double Step (double z);
 		friend double Tanh(double z);
 		friend double leakyReLU(double z, double a);
-
 		double Cost(KR_Matrix::Matrix expectedOutput);
+
+		// utility functions
 		int readBias(std::string file_name);
 		int readWeights(std::string fileName);
 		void normalDistMatrix(KR_Matrix::Matrix &matrix, double expectation, double stdev);

@@ -366,22 +366,25 @@ double ANN::Cost(KR_Matrix::Matrix expectedOutput)
 	double expectedOutputElement = 0;
 	double difference = 0;
 
+	double temp;
 	// error without weight decay
 	for (int i = 0 ; i < numberOfSamples; i++)
 	{
+		temp = 0;
 		for (int j = 0 ; j < this->outputSize; j++)
 		{
 			outputElement = this->outputMatrix.getElement(i,j);
 			expectedOutputElement = expectedOutput.getElement(i,j);
-
-			difference = fabs(expectedOutputElement - outputElement);
-			cost += (pow(difference,2.0)/2);
+			difference = (outputElement - expectedOutputElement);
+			temp += fabs(difference);
+			temp = (pow(temp,2.0)/2);
 		}
+		cost += temp;
 	}
 
 	double coeff = 1.0/numberOfSamples;
 	cost *= coeff; // the cost without the weight decay portion
-std::cout << "cost = " << cost << std::endl;
+
 	double weightDecayTerm = 0;
 	if (this->weightDecay != 0)
 	{
