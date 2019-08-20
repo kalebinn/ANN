@@ -25,6 +25,8 @@ class Matrix
 		mat_size_type getnRows(void) {return this->nRows;}; // return the number of rows
 		mat_size_type getnCols(void) {return this->nCols;}; // return the number of columns
 		mat_value_type getElement(mat_size_type row, mat_size_type col);
+		mat_value_type sumRow(mat_size_type row);
+		mat_value_type sumCol (mat_size_type col);
 		friend Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2); // element by element mult
 		friend Matrix cat(const Matrix &Matrix1, const Matrix &Matrix2, std::string direction); // concating two matrices
 		Matrix operator= (const Matrix &arg); // assignment operator

@@ -129,6 +129,26 @@ Matrix::mat_value_type Matrix::getElement(mat_size_type row, mat_size_type col)
 	return element;
 }
 
+Matrix::mat_value_type Matrix::sumRow(mat_size_type row)
+{
+	mat_value_type sum = 0;
+	for (mat_size_type i = 0; i < this->nCols; i++)
+	{
+		sum += this->A[row][i];
+	}
+	return sum;
+}
+Matrix::mat_value_type Matrix::sumCol (mat_size_type col)
+{
+	mat_value_type sum = 0;
+	for (mat_size_type i = 0; i < this->nRows; i++)
+	{
+		sum += this->A[i][col];
+	}
+	return sum;
+}
+
+
 Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 {
 	assert(Matrix1.nRows == Matrix2.nRows);

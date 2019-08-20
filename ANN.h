@@ -21,16 +21,24 @@ class ANN {
 				double weightDecay = 0);
 
 		KR_Matrix::Matrix forwardPropagation(KR_Matrix::Matrix inputMatrix);
+		KR_Matrix::Matrix backPropagation (KR_Matrix::Matrix expectedOutput);
 
 		void createSummationsandActivations();
-		KR_Matrix::Matrix Activate(std::string functionType, KR_Matrix::Matrix arg);
 
+		// mathematical equations
+		KR_Matrix::Matrix Activate(std::string functionType, KR_Matrix::Matrix arg);
 		friend double ReLU (double z);
 		friend double Sigmoid (double z);
 		friend double Step (double z);
 		friend double Tanh(double z);
 		friend double leakyReLU(double z, double a);
+		friend double ReLU_prime(double z);
+		friend double Sigmoid_prime(double z);
+		friend double Step_prime (double z);
+		friend double Tanh_prime(double z);
+		friend double leakyRelU_prime(double z, double a);
 		double Cost(KR_Matrix::Matrix expectedOutput);
+
 
 		// utility functions
 		int readBias(std::string file_name);

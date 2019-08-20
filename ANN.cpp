@@ -196,6 +196,16 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix)
 	return output;
 }
 
+KR_Matrix::Matrix ANN::backPropagation(KR_Matrix::Matrix expectedOutput)
+{
+	KR_Matrix::Matrix result(0,0);
+
+
+
+
+	return result;
+}
+
 void ANN::createSummationsandActivations()
 {
 	for (int i = 0; i < this->nHiddenLayers; i++)
@@ -280,6 +290,50 @@ double leakyReLU(double z, double a)
 	}
 	return result;
 }
+
+double ReLU_prime(double z)
+{
+	if (ReLU(z) > 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+double Sigmoid_prime(double z)
+{
+	return (Sigmoid(z) * (1 - Sigmoid(z)));
+}
+double Step_prime (double z)
+{
+	if (z == 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return 0;
+	}
+}
+double Tanh_prime(double z)
+{
+	// derivative of hyperbolic tangent is 1 - (tanh(z))^2
+	return 1 - pow((Tanh(z)),2.0);
+}
+double leakyRelU_prime(double z, double a)
+{
+	if (leakyReLU(z,a) > 0)
+	{
+		return 1;
+	}
+	else
+	{
+		return a;
+	}
+}
+
 
 KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 {
@@ -368,10 +422,10 @@ double ANN::Cost(KR_Matrix::Matrix expectedOutput)
 
 	double temp;
 	// error without weight decay
-	for (int i = 0 ; i < numberOfSamples; i++)
+	for (auto i = 0 ; i < numberOfSamples; i++)
 	{
 		temp = 0;
-		for (int j = 0 ; j < this->outputSize; j++)
+		for (auto j = 0 ; j < this->outputSize; j++)
 		{
 			outputElement = this->outputMatrix.getElement(i,j);
 			expectedOutputElement = expectedOutput.getElement(i,j);
