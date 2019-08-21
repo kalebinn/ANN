@@ -21,12 +21,13 @@ class ANN {
 				double weightDecay = 0);
 
 		KR_Matrix::Matrix forwardPropagation(KR_Matrix::Matrix inputMatrix);
-		KR_Matrix::Matrix backPropagation (KR_Matrix::Matrix expectedOutput);
+		void backPropagation (KR_Matrix::Matrix expectedOutput);
 
 		void createSummationsandActivations();
 
 		// mathematical equations
 		KR_Matrix::Matrix Activate(std::string functionType, KR_Matrix::Matrix arg);
+		KR_Matrix::Matrix Activate_prime(std::string functionType, const KR_Matrix::Matrix &arg);
 		friend double ReLU (double z);
 		friend double Sigmoid (double z);
 		friend double Step (double z);
@@ -36,7 +37,7 @@ class ANN {
 		friend double Sigmoid_prime(double z);
 		friend double Step_prime (double z);
 		friend double Tanh_prime(double z);
-		friend double leakyRelU_prime(double z, double a);
+		friend double leakyReLU_prime(double z, double a);
 		double Cost(KR_Matrix::Matrix expectedOutput);
 
 
@@ -68,6 +69,7 @@ class ANN {
 		KR_Matrix::Matrix *weights;
 		KR_Matrix::Matrix *biasses;
 		KR_Matrix::Matrix outputMatrix ;
+		KR_Matrix::Matrix firstLayerDelta; // used ONLY for CNN
 };
 
 } /* namespace KR_ANN */

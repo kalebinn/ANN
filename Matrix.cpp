@@ -111,7 +111,7 @@ Matrix::setElement (mat_size_type row, mat_size_type col, mat_value_type val)
 
 }
 
-Matrix::mat_value_type Matrix::getElement(mat_size_type row, mat_size_type col)
+Matrix::mat_value_type Matrix::getElement (mat_size_type row, mat_size_type col) const
 {
 	assert(row < this->nRows);
 	assert(col < this->nCols);
@@ -147,7 +147,6 @@ Matrix::mat_value_type Matrix::sumCol (mat_size_type col)
 	}
 	return sum;
 }
-
 
 Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)
 {
@@ -233,7 +232,26 @@ Matrix Matrix::operator = (const Matrix &arg)
 	}
 	return *this;
 }
+Matrix meanRowVector(const Matrix &arg)
+{
+	Matrix::mat_size_type nRows = arg.getnRows();
+	Matrix::mat_size_type nCols = arg.getnCols();
+	Matrix meanRowVector((Matrix::mat_size_type)1, nCols);
+	Matrix::mat_value_type mean, sum;
 
+	for (Matrix::mat_size_type i = 0 ; i < nCols; i++)
+	{
+		sum = 0;
+		mean = 0;
+		for (Matrix::mat_size_type j = 0; j < nRows; j++)
+		{
+			sum += arg.A[j][i];
+		}
+		mean = sum /nRows;
+		meanRowVector.setElement(1,i,mean);
+	}
+	return meanRowVector;
+}
 bool
 Matrix::operator== (const Matrix &arg)
 {

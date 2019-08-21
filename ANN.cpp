@@ -30,6 +30,8 @@ ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	this->inputMatrix = input;
 	KR_Matrix::Matrix output(1,outputSize);
 	this->outputMatrix = output;
+	KR_Matrix::Matrix temp (nFeatures, neuronsPerHiddenLayer[0]);
+	this->firstLayerDelta = temp;
 
 	this-> nHiddenLayers = nHiddenLayers;
 	this-> learningRate = learningRate;
@@ -38,15 +40,15 @@ ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 	this-> activationMatrices = new KR_Matrix::Matrix [nHiddenLayers+1];
 	this-> summations = new KR_Matrix::Matrix [nHiddenLayers+1];
 
-	this-> activationFunctions = new std::string [nHiddenLayers + 1];
+	this-> activationFunctions = new std::string [nHiddenLayers+1];
 	this-> neuronsPerHiddenLayer = new int [nHiddenLayers + 1];
-
 
 	for (int i = 0; i < nHiddenLayers; i++)
 	{
 		this-> neuronsPerHiddenLayer[i] = neuronsPerHiddenLayer[i];
 		this-> activationFunctions[i] = activationFunction;
 	}
+	this-> activationFunctions[nHiddenLayers] = "linear";
 
 	this->weights = new KR_Matrix::Matrix [nHiddenLayers+1];
 	this->biasses = new KR_Matrix::Matrix [nHiddenLayers+1];
@@ -109,6 +111,7 @@ ANN::ANN (int nFeatures, int outputSize, int nHiddenLayers, int *neuronsPerHidde
 		this-> neuronsPerHiddenLayer[i] = neuronsPerHiddenLayer[i];
 		this-> activationFunctions[i] = activationFunction[i];
 	}
+	this-> activationFunctions[nHiddenLayers] = "linear";
 
 	this->weights = new KR_Matrix::Matrix [nHiddenLayers+1];
 	this->biasses = new KR_Matrix::Matrix [nHiddenLayers+1];
@@ -167,24 +170,13 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix)
 	this->summations[0] = (inputMatrix * this->weights[0]) + this->biasses[0];
 	this->activationMatrices[0] = ANN::Activate(this->activationFunctions[0], this->summations[0]);
 	std::cout << '\t' << "Hidden Layer #1 Completed." << std::endl;
+
 	for (int i = 1 ; i < nHiddenLayers+1; i++)
 	{
-		if(i == nHiddenLayers)
-		{
-			// last hidden layer | output layer
-			std::cout << "Computing Output layer" << std::endl;
-			this->summations[i] = (this->activationMatrices[i-1] * this->weights[i]) + this->biasses[i];
-			//this->summations[i].printMatrix(summationsFile);
-			this->activationMatrices[i] = ANN::Activate("linear", this->summations[i]);
-		}
-		else
-		{
-			// hiddenlayer[i-1] | hiddenlayer[i]
-			std::cout << "Hidden Layer # " << i+1 << std::endl;
-			this->summations[i] = (this->activationMatrices[i-1] * this->weights[i]) + this->biasses[i];
-			this->activationMatrices[i] = ANN::Activate(this->activationFunctions[i], this->summations[i]);
-			std::cout << '\t' << "Hidden Layer # " << i+1 << " Completed." << std::endl;
-		}
+		std::cout << "Hidden Layer # " << i+1 << std::endl;
+		this->summations[i] = (this->activationMatrices[i-1] * this->weights[i]) + this->biasses[i];
+		this->activationMatrices[i] = ANN::Activate(this->activationFunctions[i], this->summations[i]);
+		std::cout << '\t' << "Hidden Layer # " << i+1 << " Completed." << std::endl;
 	}
 
 	output = this->activationMatrices[nHiddenLayers];
@@ -196,14 +188,55 @@ KR_Matrix::Matrix ANN::forwardPropagation(KR_Matrix::Matrix inputMatrix)
 	return output;
 }
 
-KR_Matrix::Matrix ANN::backPropagation(KR_Matrix::Matrix expectedOutput)
+void ANN::backPropagation(KR_Matrix::Matrix expectedOutput)
 {
-	KR_Matrix::Matrix result(0,0);
+	// NOTE: delta is the backpropagating error
 
+	KR_Matrix::Matrix delta[this->nHiddenLayers+1];
 
+	for (int i = 0; i < this->nHiddenLayers; i++)
+	{
+		delta[i] = KR_Matrix::Matrix (this->nSamples, this->neuronsPerHiddenLayer[i]);
+	}
+	delta[this->nHiddenLayers] = KR_Matrix::Matrix(this->nSamples, this->outputSize);
 
+	// calculate all the deltas first
+	KR_Matrix::Matrix activation_prime = Activate_prime("linear", this->summations[nHiddenLayers]);
+	KR_Matrix::Matrix output_diff = this->outputMatrix - expectedOutput;
+	output_diff = (-1)*output_diff;
+	delta[nHiddenLayers] = elementMult(output_diff,activation_prime);
 
-	return result;
+	for (int i = nHiddenLayers -1 ; i >= 0; i--)
+	{
+		activation_prime = Activate_prime(this->activationFunctions[i], this->summations[i]);
+		delta[i] = elementMult(delta[i+1] * this->weights[i].Transpose(),activation_prime);
+	}
+
+	this->firstLayerDelta = delta[0]; // used for Convolutional Neural Network (next project)
+
+	// calculate dJ/dW 's and dJ/dB 's
+	KR_Matrix::Matrix d_cost_d_weights[nHiddenLayers+1];
+	KR_Matrix::Matrix d_cost_d_bias[nHiddenLayers+1];
+
+	for (int i = 0; i < nHiddenLayers+1; i++)
+	{
+		if (i == 0)
+		{
+			d_cost_d_weights[i] = (this->inputMatrix.Transpose())*delta[i];
+		}
+		else
+		{
+			d_cost_d_weights[i] = (this->activationMatrices[i-1].Transpose()) * delta[i];
+		}
+		//d_cost_d_bias = meanRowVector(delta[i]);
+	}
+
+	// Adjust the weights and baises
+	for (int i = 0; i < nHiddenLayers+1; i++)
+	{
+		this->weights[i] = this->weights[i] - this->learningRate*d_cost_d_weights[i];
+		//this->biasses[i] = this->biasses[i] - this->learningRate*d_cost_d_bias[i];
+	}
 }
 
 void ANN::createSummationsandActivations()
@@ -317,12 +350,14 @@ double Step_prime (double z)
 		return 0;
 	}
 }
+
 double Tanh_prime(double z)
 {
 	// derivative of hyperbolic tangent is 1 - (tanh(z))^2
 	return 1 - pow((Tanh(z)),2.0);
 }
-double leakyRelU_prime(double z, double a)
+
+double leakyReLU_prime(double z, double a)
 {
 	if (leakyReLU(z,a) > 0)
 	{
@@ -333,7 +368,6 @@ double leakyRelU_prime(double z, double a)
 		return a;
 	}
 }
-
 
 KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 {
@@ -389,13 +423,76 @@ KR_Matrix::Matrix ANN::Activate(std::string functionType, KR_Matrix::Matrix arg)
 			{
 				// default is relu
 				std::cout << "WARNING: Unsupported activation function type - Using ReLU " << std::endl;
-				std::cout << "SUGGESTION: Supported activations - LeakyReLU, ReLU, Sigmoid, Step, Tanh" << std::endl << std::endl;
+				std::cout << "SUGGESTION: Supported activations - LeakyReLU, ReLU, Sigmoid, Step, Tanh, Linear" << std::endl << std::endl;
 				activatedElement = ReLU(elementValue);
 			}
 			activatedMatrix.setElement(i,j,activatedElement);
 		}
 	}
 	return activatedMatrix;
+}
+
+KR_Matrix::Matrix ANN::Activate_prime(std::string functionType, const KR_Matrix::Matrix &arg)
+{
+	int nRows = arg.getnRows();
+	int nCols = arg.getnCols();
+	KR_Matrix::Matrix primeActivatedMatrix(nRows, nCols);
+
+	// change all letters in string to capital
+	// to remove case sensitivity in activation functions
+	for (std::string::size_type i = 0; i < functionType.length(); i++)
+	{
+		if (std::islower(functionType[i]))
+		{
+			functionType[i] = std::toupper(functionType[i]);
+		}
+	}
+
+	double elementValue;
+	double activatedElement;
+
+	// apple the activation function to every element in the input matrix (arg)
+	for (std::size_t i = 0; i < arg.getnRows(); i++)
+	{
+		for (std::size_t j = 0 ;j < arg.getnCols(); j++)
+		{
+			elementValue = arg.getElement(i,j);
+
+			if (functionType.compare("RELU") == 0)
+			{
+				activatedElement = ReLU_prime(elementValue);
+			}
+			else if (functionType.compare("SIGMOID") == 0)
+			{
+				activatedElement = Sigmoid_prime(elementValue);
+			}
+			else if(functionType.compare("STEP") == 0)
+			{
+				activatedElement = Step_prime(elementValue);
+			}
+			else if (functionType.compare("TANH") == 0)
+			{
+				activatedElement = Tanh_prime(elementValue);
+			}
+			else if (functionType.compare("LEAKYRELU") == 0)
+			{
+				activatedElement = leakyReLU_prime(elementValue, leakyRate);
+			}
+			else if (functionType.compare("LINEAR") == 0)
+			{
+				activatedElement = 1;
+			}
+			else
+			{
+				// default is relu
+				std::cout << "WARNING: Unsupported activation function type - Using ReLU " << std::endl;
+				std::cout << "SUGGESTION: Supported activations - LeakyReLU, ReLU, Sigmoid, Step, Tanh, Linear" << std::endl << std::endl;
+				activatedElement = ReLU_prime(elementValue);
+			}
+			primeActivatedMatrix.setElement(i,j,activatedElement);
+		}
+	}
+	return primeActivatedMatrix;
 }
 
 double ANN::Cost(KR_Matrix::Matrix expectedOutput)
