@@ -8,6 +8,7 @@
 #include <fstream>
 #include <iostream>
 #include <string>
+#include <cmath>
 
 #include "Matrix.h"
 
@@ -146,6 +147,23 @@ Matrix::mat_value_type Matrix::sumCol (mat_size_type col)
 		sum += this->A[i][col];
 	}
 	return sum;
+}
+
+Matrix::mat_value_type Matrix::norm()
+{
+	// Frobenius norm
+	Matrix::mat_value_type frobenius_norm = 0;
+	double sum = 0;
+	for (Matrix::mat_size_type i = 0; i < this->nRows; i++)
+	{
+		for (Matrix::mat_size_type j = 0; j < this->nCols; j++)
+		{
+			sum += this->A[i][j];
+		}
+	}
+
+	frobenius_norm = sqrt(pow(sum,2.0));
+	return frobenius_norm;
 }
 
 Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2)

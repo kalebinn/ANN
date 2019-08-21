@@ -26,4 +26,5 @@ ForwardPropTest.asv
 inputmat.txt
 output.txt
 exp_output.txt
+gradient_testing.cpp
 

@@ -27,6 +27,7 @@ class Matrix
 		mat_value_type getElement(mat_size_type row, mat_size_type col) const ;
 		mat_value_type sumRow(mat_size_type row);
 		mat_value_type sumCol (mat_size_type col);
+		mat_value_type norm();
 		friend Matrix elementMult(const Matrix &Matrix1, const Matrix &Matrix2); // element by element mult
 		friend Matrix cat(const Matrix &Matrix1, const Matrix &Matrix2, std::string direction); // concating two matrices
 		friend Matrix meanRowVector(const Matrix &arg);
