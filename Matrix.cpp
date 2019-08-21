@@ -245,7 +245,7 @@ Matrix meanRowVector(const Matrix &arg)
 		mean = 0;
 		for (Matrix::mat_size_type j = 0; j < nRows; j++)
 		{
-			sum += arg.A[j][i];
+			sum += arg.getElement(j,i);
 		}
 		mean = sum /nRows;
 		meanRowVector.setElement(1,i,mean);

@@ -228,14 +228,14 @@ void ANN::backPropagation(KR_Matrix::Matrix expectedOutput)
 		{
 			d_cost_d_weights[i] = (this->activationMatrices[i-1].Transpose()) * delta[i];
 		}
-		//d_cost_d_bias = meanRowVector(delta[i]);
+		d_cost_d_bias[i] = meanRowVector(delta[i]);
 	}
 
 	// Adjust the weights and baises
 	for (int i = 0; i < nHiddenLayers+1; i++)
 	{
 		this->weights[i] = this->weights[i] - this->learningRate*d_cost_d_weights[i];
-		//this->biasses[i] = this->biasses[i] - this->learningRate*d_cost_d_bias[i];
+		this->biasses[i] = this->biasses[i] - this->learningRate*d_cost_d_bias[i];
 	}
 }
 
